@@ -23,7 +23,7 @@ class App extends BaseConfig
 	 *
 	 * @var string
 	 */
-	public $baseURL = 'http://localhost:8080/public/';
+	public $baseURL = 'http://localhost/nuevop/public/';
 
 	/**
 	 * --------------------------------------------------------------------------
@@ -108,7 +108,7 @@ class App extends BaseConfig
 	 *
 	 * @var string
 	 */
-	public $appTimezone = 'America/Chicago';
+	public $appTimezone = 'America/Argentina/Buenos_Aires';
 
 	/**
 	 * --------------------------------------------------------------------------
