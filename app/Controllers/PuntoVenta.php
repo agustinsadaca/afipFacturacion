@@ -45,7 +45,7 @@ class PuntoVenta extends AdminLayout
         $crud->callbackAddField('date',array($this,'_add_default_date_value'));
         $crud->callbackColumn('venta', function ($value, $row) {
 
-            return '<a class="form-control" href="'.base_url().'/PuntoVenta/carrito/'.$row->id.'" name="contact_telephone_number" id="something-unique" >Venta</a>';
+            return '<a class="button" href="'.base_url().'/PuntoVenta/carrito/'.$row->id.'" name="contact_telephone_number" id="something-unique" >Venta</a>';
             
         });
 
@@ -70,13 +70,12 @@ class PuntoVenta extends AdminLayout
         $crud = new GroceryCrud();
         
         $arrayColumns = [
-           'id_detalle_factura','productos','cantidad','subtotal','id_factura'
-    
+           'id_detalle_factura','productos','cod_barras','otro_Producto','precio','cantidad','subtotal','id_factura'
         ];
         //// SETS GENERALES
         $crud->setTheme('datatables');
         $crud->setTable('detalle_factura');
-        $crud->setSubject('detalle_factura', 'Productos del Carrito');
+        $crud->setSubject('detalle_factura', 'Productos del Carrito','');
        
         // $crud->unsetAddFields(['Productoss']);
         // $crud->unsetEditFields(['Productoss']);
@@ -89,13 +88,17 @@ class PuntoVenta extends AdminLayout
         $crud->fieldType('subtotal', 'readonly');
         $crud->fieldType('id_detalle_factura', 'readonly');
 
-        // $crud->unsetColumns(['productos']);
-    
+        if ($crud->getState() == 'add') {
+
+            $crud->fieldType('id_factura', 'hidden'); 
+            $crud->fieldType('id_detalle_factura', 'hidden'); 
+       }
+
         $productoModel = new ProductoModel();
         $resultados =  $productoModel->traerPrecioActualizado();
         $crud->fieldType('productos','dropdown',$resultados);
-        
-        $crud->callbackAfterInsert(function ($stateParameters) use ($id) {
+    
+        $crud->callbackAfterInsert(function ($stateParameters) use ($id,$crud) {
            
             $detalleFacturaModel = new DetalleFacturaModel();
 
@@ -103,6 +106,15 @@ class PuntoVenta extends AdminLayout
          
             return $resultado;
         });
+
+        $crud->callbackColumn('cod_barras', function ($value, $row) {
+            $producto = new ProductoModel();
+
+            $resultado =  $producto->buscarCodBarra($row);
+            return "<p>".$resultado."</p>";
+            
+        });
+          
         $crud->callbackColumn('productos', function ($value, $row) {
 
             $producto = new ProductoModel();
@@ -110,19 +122,42 @@ class PuntoVenta extends AdminLayout
 
             return "<p>".$resultado."</p>";
         });
-    
+        $crud->callbackAddField('otro_Producto', function ()
+        {
+            return '<input type="text" " name="otro_Producto">';
+
+        }); $crud->callbackAddField('precio', function ()
+        {
+            return '<input type="text"  name="precio">';
+        });
     
         $crud->callbackAddField('cantidad', function ()
         {
-
             return '<input type="number" value="1" name="num">';
-
         });
+        
 
-        $data = array();
+        // $validation =  \Config\Services::validation();
+        // $validation->setRule('cod_barras', 'cod_barras', 'required');
+        // $errors = $validation->getErrors();
+
         $data['grocery'] = $crud;
+        $data['view'] = 'carrito'; 
+        $data['title'] = (string)$id;
+        $data['total'] = '';
         return $this->render($data);
     }
+
+    function agregarDetalleAutomatico($codBarra,$id) 
+    {
+        $guardarDetalle = new DetalleFacturaModel();
+
+        $guardarDetalle->agregarDetalleAutomatico($codBarra,$id);
+       
+        return ;
+    }
+   
+    
     
 
 }

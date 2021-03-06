@@ -42,6 +42,23 @@ class ProductoModel extends Model
  
         return  $result;
     } 
+    public function traerPrecio()
+    {
+        $db = \Config\Database::connect();
+        $query = $db->query("SELECT producto.id_Producto FROM producto INNER JOIN lista_de_precios ON producto.idListaPrecios=lista_de_precios.id WHERE lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW()");
+        $results = $query->getResultObject();
+       
+        if($results)
+		{
+			foreach($results as $item)
+			{
+				$return_id = $item->id_Producto;
+			}
+		}
+     
+		return $return_id;
+        
+    }
     public function buscarProducto($row)
     {
         $db = \Config\Database::connect();
@@ -52,6 +69,14 @@ class ProductoModel extends Model
      
         return  $result;
     } 
+    public function buscarCodBarra($row){
+        $db = \Config\Database::connect();
+        $idProd = $row->id_Producto;
+        $query = $db->query("SELECT cod_barras FROM producto WHERE id_Producto='$idProd'");
+        $result = $query->getResultObject()[0]->cod_barras;
+        
+        return  $result;
+    }
 
     
 

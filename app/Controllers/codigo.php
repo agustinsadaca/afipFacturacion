@@ -57,3 +57,38 @@
         //     $this->model = new EstablecimientoModel();
         //     $this->model->traerPrecioActualizado($row);
         // });
+
+
+
+        	// function myfunc(control){
+		// 	if(control.value.length>8){
+        //         // alert();
+		// 	 window.location = "<?php echo base_url().'/PuntoVenta/agregarDetalleAutomatico/'?>"+ control.value+"/"+<?= $data['title']?>;
+        //     }
+		// }
+
+
+                document.addEventListener("click", function(){
+            document.getElementsByClassName("bcode")[0].focus();
+        });
+
+
+
+
+<!-- 
+        <?php if(isset($trabajador->usuario_Tiktok)){
+										echo '<p><span class="first_span">Cuenta de Tiktok: </span><span><a target="blank" href="http://www.tiktok.com/@';
+										echo $trabajador->usuario_Tiktok.'"><img src="'; 
+										echo base_url().'assets/octopia_style/css/img/admin/tiktok.png"/></a></span></p>';
+									}
+									?>
+        	</article>
+								</div>
+								<div class="col-lg-12">
+									<article>
+									<?php if(isset($trabajador->usuario_Tiktok)){
+										echo '<p><span class="first_span">Followers de Tiktok: </span><span>';
+										echo $trabajador->followers_Tiktok.'</span></p>';
+									
+									}?>
+									</article> -->

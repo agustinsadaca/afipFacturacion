@@ -86,7 +86,7 @@ body{
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <!-- The navigation menu -->
-<div class="navbar">
+<div class="navbar click">
 <?php foreach ($this->data as $menu_nombre => $menues) { ?>
   <div class="subnav">
     <a href="<?= base_url().'/'.$menues['menu']['url'];?>" class="subnavbtn"><?= $menu_nombre;?> <?php if(count($menues['submenu'])){ ?><i class="fa fa-caret-down"><?php }?></i></a>

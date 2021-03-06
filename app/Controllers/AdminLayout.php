@@ -26,7 +26,7 @@ class AdminLayout extends BaseController {
 		{
 			$data['errors'] = array();
 		}
-  		
+	
 		if(!isset($data['title'])) $data['title'] = 'Puertas Azules';
 
 		if(isset($data['grocery']))
@@ -76,6 +76,8 @@ class AdminLayout extends BaseController {
 		
 		$menu = view('menu', $menues);
 		$header = view('header');
+		
+
 
 		$view = \Config\Services::renderer();
 		return $view->setVar('data', $data)->setVar('header', $header)->setVar('menu', $menu)->render($data['view']);
