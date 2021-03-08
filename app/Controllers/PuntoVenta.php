@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Controllers;
-
 use App\Libraries\GroceryCrud;
 use App\Models\FacturaModel;
 use App\Models\ProductoModel;
@@ -34,7 +33,7 @@ class PuntoVenta extends AdminLayout
         $crud->fieldType('total', 'readonly');
         $crud->fieldType('id', 'readonly');
         $crud->unsetAddFields(['id','total']);
-
+        // $crud->fieldType('date','datetime');
      
         if ($crud->getState() == 'add') {
 
@@ -70,32 +69,39 @@ class PuntoVenta extends AdminLayout
         $crud = new GroceryCrud();
         
         $arrayColumns = [
-           'id_detalle_factura','productos','cod_barras','otro_Producto','precio','cantidad','subtotal','id_factura'
+           'id_detalle_factura','productos','cod_barras','precio','cantidad','subtotal','id_factura'
         ];
+        $arrayAddColumns = ['productos','cod_barras','precio','cantidad'];
         //// SETS GENERALES
         $crud->setTheme('datatables');
         $crud->setTable('detalle_factura');
         $crud->setSubject('detalle_factura', 'Productos del Carrito','');
-       
-        // $crud->unsetAddFields(['Productoss']);
-        // $crud->unsetEditFields(['Productoss']);
         $crud->columns($arrayColumns);
         $crud->unsetColumns(['id_factura','id_detalle_factura']);
         $crud->unsetFields(['id_factura']);
         $crud->editFields($arrayColumns);
-        $crud->fields($arrayColumns);
         $crud->where('id_factura',$id);
         $crud->fieldType('subtotal', 'readonly');
         $crud->fieldType('id_detalle_factura', 'readonly');
+        $crud->unsetAddFields(['subtotal']);
+        $crud->addFields($arrayAddColumns);
+
+
 
         if ($crud->getState() == 'add') {
 
             $crud->fieldType('id_factura', 'hidden'); 
             $crud->fieldType('id_detalle_factura', 'hidden'); 
        }
+        if ($crud->getState() == 'edit') {
+
+            $crud->fieldType('subtotal', 'hidden'); 
+            $crud->fieldType('id_factura', 'hidden'); 
+       }
 
         $productoModel = new ProductoModel();
-        $resultados =  $productoModel->traerPrecioActualizado();
+        $resultados =  $productoModel->buscarListaProductos();
+
         $crud->fieldType('productos','dropdown',$resultados);
     
         $crud->callbackAfterInsert(function ($stateParameters) use ($id,$crud) {
@@ -128,10 +134,15 @@ class PuntoVenta extends AdminLayout
 
         }); $crud->callbackAddField('precio', function ()
         {
-            return '<input type="text"  name="precio">';
+            return '<input type="text" class="form-controls"  name="precio">';
         });
     
         $crud->callbackAddField('cantidad', function ()
+        {
+            return '<input type="number" value="1" name="num">';
+        });
+        
+        $crud->callbackEditField('cantidad', function ()
         {
             return '<input type="number" value="1" name="num">';
         });
@@ -156,6 +167,7 @@ class PuntoVenta extends AdminLayout
        
         return ;
     }
+
    
     
     

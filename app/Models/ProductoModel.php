@@ -25,7 +25,6 @@ class ProductoModel extends Model
         $db = \Config\Database::connect();
 
         $query = $db->query("SELECT producto.id_Producto, producto.nombre, lista_de_precios.precio FROM producto INNER JOIN lista_de_precios ON producto.idListaPrecios=lista_de_precios.id WHERE lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW()");
-        // var_dump($query);die;
     
         $results = $query->getResultObject();
 
@@ -61,13 +60,43 @@ class ProductoModel extends Model
     }
     public function buscarProducto($row)
     {
+        $idProd = $row;
         $db = \Config\Database::connect();
+        if(is_object($row)){
         $idProd = $row->id_Producto;
+        };
+       
         $query = $db->query("SELECT nombre FROM producto WHERE id_Producto='$idProd'");
        
         $result = $query->getResultObject()[0]->nombre;
-     
+      
+        
         return  $result;
+    } 
+    public function buscarPrecioXNomb($nombre)
+    {
+       
+        $db = \Config\Database::connect();
+       
+        $query = $db->query("SELECT lista_de_precios.precio, producto.cod_barras FROM producto INNER JOIN lista_de_precios ON producto.idListaPrecios=lista_de_precios.id WHERE producto.nombre='$nombre' AND (lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW())");
+       
+        $result = $query->getResultObject()[0];
+        
+        return  $result;
+    } 
+    public function buscarListaProductos()
+    {
+        $db = \Config\Database::connect();
+        $query = $db->query("SELECT nombre FROM producto");
+        
+        $result = $query->getResultObject();
+        $productos = array(); 
+
+        foreach($result as $value){
+            array_push($productos,$value->nombre);
+        }
+ 
+        return  $productos;
     } 
     public function buscarCodBarra($row){
         $db = \Config\Database::connect();
