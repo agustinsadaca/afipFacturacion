@@ -5,6 +5,7 @@ use App\Libraries\GroceryCrud;
 use App\Models\FacturaModel;
 use App\Models\ProductoModel;
 use App\Models\DetalleFacturaModel;
+use App\Models\ClienteModel;
 
 
 
@@ -15,11 +16,11 @@ class PuntoVenta extends AdminLayout
 		$crud = new GroceryCrud();
  
         $arrayColumns = [
-           'id','date','total'
+           'id','date','total','id_cliente'
         ];
 
         $columnas = [
-            'id','date','total','venta'
+            'id','date','total','venta','id_cliente'
         ];
     
         //// SETS GENERALES
@@ -28,13 +29,14 @@ class PuntoVenta extends AdminLayout
         $crud->setSubject('factura', 'Facturas');
         $crud->columns($columnas);
         $crud->displayAs('id','Numero de Factura');
+        $crud->displayAs('id_cliente','Cliente');
         $crud->editFields($arrayColumns);
         $crud->fields($arrayColumns);
         $crud->fieldType('total', 'readonly');
         $crud->fieldType('id', 'readonly');
         $crud->unsetAddFields(['id','total']);
-        // $crud->fieldType('date','datetime');
-     
+        $crud->setRelation('id_cliente', 'cliente', 'nombre_completo');
+
         if ($crud->getState() == 'add') {
 
             $crud->fieldType('id', 'hidden');
@@ -42,6 +44,7 @@ class PuntoVenta extends AdminLayout
        };
 
         $crud->callbackAddField('date',array($this,'_add_default_date_value'));
+  
         $crud->callbackColumn('venta', function ($value, $row) {
 
             return '<a class="button" href="'.base_url().'/PuntoVenta/carrito/'.$row->id.'" name="contact_telephone_number" id="something-unique" >Venta</a>';
@@ -69,9 +72,9 @@ class PuntoVenta extends AdminLayout
         $crud = new GroceryCrud();
         
         $arrayColumns = [
-           'id_detalle_factura','productos','cod_barras','precio','cantidad','subtotal','id_factura'
+           'id_detalle_factura','id_Producto','cod_barras','precio','cantidad','subtotal','id_factura'
         ];
-        $arrayAddColumns = ['productos','cod_barras','precio','cantidad'];
+        $arrayAddColumns = ['id_Producto','cod_barras','precio','cantidad'];
         //// SETS GENERALES
         $crud->setTheme('datatables');
         $crud->setTable('detalle_factura');
@@ -85,8 +88,10 @@ class PuntoVenta extends AdminLayout
         $crud->fieldType('id_detalle_factura', 'readonly');
         $crud->unsetAddFields(['subtotal']);
         $crud->addFields($arrayAddColumns);
+        $crud->setRelation('id_Producto','producto','nombre');
+        $crud->displayAs('id_Producto','Productos');
 
-
+        $crud->unsetEditFields([  'id_detalle_factura','id_Producto','cod_barras','precio','cantidad','subtotal','id_factura']);
 
         if ($crud->getState() == 'add') {
 
@@ -95,21 +100,29 @@ class PuntoVenta extends AdminLayout
        }
         if ($crud->getState() == 'edit') {
 
-            $crud->fieldType('subtotal', 'hidden'); 
+            $crud->fieldType('subtotal', 'readonly'); 
             $crud->fieldType('id_factura', 'hidden'); 
+            $crud->fieldType('id_detalle_factura', 'hidden'); 
        }
 
         $productoModel = new ProductoModel();
         $resultados =  $productoModel->buscarListaProductos();
 
-        $crud->fieldType('productos','dropdown',$resultados);
     
         $crud->callbackAfterInsert(function ($stateParameters) use ($id,$crud) {
            
             $detalleFacturaModel = new DetalleFacturaModel();
 
-            $resultado =  $detalleFacturaModel->guardarProducto($stateParameters,$id);
+            $resultado =  $detalleFacturaModel->guardarProducto1($stateParameters,$id);
          
+            return $resultado;
+        });
+        $crud->callbackUpdate(function ($stateParameters) use ($id,$crud) {
+      
+            $detalleFacturaModel = new DetalleFacturaModel();
+
+            $resultado =  $detalleFacturaModel->editarProductoDetalle($stateParameters,$id);
+           
             return $resultado;
         });
 
@@ -120,6 +133,7 @@ class PuntoVenta extends AdminLayout
             return "<p>".$resultado."</p>";
             
         });
+
           
         $crud->callbackColumn('productos', function ($value, $row) {
 
@@ -128,29 +142,29 @@ class PuntoVenta extends AdminLayout
 
             return "<p>".$resultado."</p>";
         });
-        $crud->callbackAddField('otro_Producto', function ()
-        {
-            return '<input type="text" " name="otro_Producto">';
 
-        }); $crud->callbackAddField('precio', function ()
-        {
-            return '<input type="text" class="form-controls"  name="precio">';
+        $crud->callbackColumn('precio', function ($value, $row) {
+
+            $precio = new ProductoModel();
+            $resultado =  $precio->traerPrecioProd($value,$row);
+
+            return "<p>".$resultado."</p>";
         });
+        
     
         $crud->callbackAddField('cantidad', function ()
         {
             return '<input type="number" value="1" name="num">';
         });
         
-        $crud->callbackEditField('cantidad', function ()
+        $crud->callbackEditField('cantidad', function ($fieldValue, $primaryKeyValue ) 
         {
-            return '<input type="number" value="1" name="num">';
-        });
-        
+           $cantidad = new DetalleFacturaModel();
 
-        // $validation =  \Config\Services::validation();
-        // $validation->setRule('cod_barras', 'cod_barras', 'required');
-        // $errors = $validation->getErrors();
+           $resultado =  $cantidad->buscarCantidadDetalle($primaryKeyValue);
+            return '<input type="number" value="'.$resultado.'" name="num">';
+        });
+
 
         $data['grocery'] = $crud;
         $data['view'] = 'carrito'; 
@@ -168,7 +182,15 @@ class PuntoVenta extends AdminLayout
         return ;
     }
 
-   
+   function getTotalFactura($id){
+
+        $total = new DetalleFacturaModel();
+
+        $totalFact= $total->obtenerTotal($id);
+    
+        return  json_encode($totalFact);
+
+   }
     
     
 

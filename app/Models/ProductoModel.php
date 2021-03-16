@@ -20,44 +20,83 @@ class ProductoModel extends Model
 
     
 
-    public function traerPrecioActualizado()
-    {
+    public function traerPrecioProd($value,$row){
+        $idProd = $row->id_Producto;
+
         $db = \Config\Database::connect();
+        $query1 = $db->query("SELECT precio FROM producto INNER JOIN lista_de_precios ON producto.id_Producto=lista_de_precios.id_Producto WHERE producto.id_Producto='$idProd' AND (lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW())");
+        $precioProd = $query1->getResultObject()[0]->precio;
 
-        $query = $db->query("SELECT producto.id_Producto, producto.nombre, lista_de_precios.precio FROM producto INNER JOIN lista_de_precios ON producto.idListaPrecios=lista_de_precios.id WHERE lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW()");
-    
-        $results = $query->getResultObject();
-
-        $productos = array_column($results, 'nombre');
-        $precios = array_column($results, 'precio');
-        $result = array();
-        $n = 0;
-        foreach($productos as $valor){
-               
-                array_push($result,$valor.'##$'.$precios[$n]);
-                $n += 1;       
+        return $precioProd;
+    }
+    public function añadirProducto($stateparameters)
+    {
+        
+        $db = \Config\Database::connect();
+        
+        $id = $stateparameters->insertId;
+  
+        $codigo_barras = $stateparameters->data['cod_barras'];
+        $query1 = $db->query("SELECT producto.cod_barras FROM producto WHERE cod_barras='$codigo_barras'");
+        $isCodBarra = $query1->getResultObject();
+   
+        if($isCodBarra != NULL){
+            
+            $data['errors'] = 'El codigo de barra ya existe';
+            return  $data;
         }
+        //crear producto
+        $query5 = $db->query("SELECT MAX(id_Producto) AS id_Producto FROM producto");
+        $results5 = $query5->getResultObject();
+        $idProducto = $results5[0]->id_Producto + 1;
 
- 
-        return  $result;
-    } 
-    public function traerPrecio()
-    {
-        $db = \Config\Database::connect();
-        $query = $db->query("SELECT producto.id_Producto FROM producto INNER JOIN lista_de_precios ON producto.idListaPrecios=lista_de_precios.id WHERE lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW()");
-        $results = $query->getResultObject();
+        $nombre = $stateparameters->data['nombre'];
        
-        if($results)
-		{
-			foreach($results as $item)
-			{
-				$return_id = $item->id_Producto;
-			}
-		}
+        $query5 = $db->query("INSERT INTO `producto`(`id_Producto`, `nombre`, `cod_barras`) VALUES ($idProducto,'$nombre',$codigo_barras)");
      
-		return $return_id;
+        // crear listaprecio
+        $query2 = $db->query("SELECT MAX(id) AS id FROM lista_de_precios");
+        $results2 = $query2->getResultObject();
+        $idListaPrecio = $results2[0]->id + 1;
+        $precio = $stateparameters->data['precio'];
+
+        $query = $db->query("INSERT INTO `lista_de_precios`(`id`, `fechaDesde`, `fechaHasta`, `precio`,`id_Producto`) VALUES ($idListaPrecio,NOW(),NULL,$precio,$idProducto)");
+      
+        //crear lote
+        $query3 = $db->query("SELECT MAX(id) AS id FROM lote");
+        $results3 = $query3->getResultObject();
+        $idLote = $results3[0]->id + 1;
+     
+        $fechaVencimiento = str_replace("/","-",$stateparameters->data['fechaVencimiento']);
+        $fechaVenc = explode(" ",$fechaVencimiento);
+        $fechaVen = explode("-",$fechaVenc[0]);
+        $fechaVe = $fechaVen[2]."-".$fechaVen[1]."-".$fechaVen[0]." ".$fechaVenc[1];
+      
+        $cantidad = floatval($stateparameters->data['Cantidad']);
+        // var_dump($cantidad);die;
+        $query4 = $db->query("INSERT INTO `lote`(`id`, `fechaCompra`, `fechaVencimiento`, `cantidad`, `id_Producto`) VALUES ($idLote,NOW(),'$fechaVe',$cantidad,$idProducto)");
+       
+		return $idProducto;
         
     }
+
+    // public function traerPrecio()
+    // {
+    //     $db = \Config\Database::connect();
+    //     $query = $db->query("SELECT producto.id_Producto FROM producto INNER JOIN lista_de_precios ON producto.idListaPrecios=lista_de_precios.id WHERE lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW()");
+    //     $results = $query->getResultObject();
+       
+    //     if($results)
+	// 	{
+	// 		foreach($results as $item)
+	// 		{
+	// 			$return_id = $item->id_Producto;
+	// 		}
+	// 	}
+     
+	// 	return $return_id;
+        
+    // }
     public function buscarProducto($row)
     {
         $idProd = $row;
@@ -75,10 +114,12 @@ class ProductoModel extends Model
     } 
     public function buscarPrecioXNomb($nombre)
     {
-       
+        
         $db = \Config\Database::connect();
        
-        $query = $db->query("SELECT lista_de_precios.precio, producto.cod_barras FROM producto INNER JOIN lista_de_precios ON producto.idListaPrecios=lista_de_precios.id WHERE producto.nombre='$nombre' AND (lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW())");
+        $query = $db->query("SELECT lista_de_precios.precio, producto.cod_barras FROM producto INNER JOIN lista_de_precios ON producto.id_Producto=lista_de_precios.id_Producto WHERE producto.nombre='$nombre' AND (lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW())");
+      
+        // $query1= $db->query("SELECT lista_de_precios.precio, producto.cod_barras FROM producto INNER JOIN lista_de_precios ON producto.id_Producto=lista_de_precios.id_Producto WHERE producto.nombre='$nombre' AND (lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW())");
        
         $result = $query->getResultObject()[0];
         

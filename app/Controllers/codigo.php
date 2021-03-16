@@ -92,3 +92,31 @@
 									
 									}?>
 									</article> -->
+
+
+
+----------------carrito add
+
+ $productoModel = new ProductoModel();
+         $resultados =  $productoModel->buscarListaProductos();
+
+         $crud->fieldType('productos','dropdown',$resultados); 
+
+
+
+
+         // $validation =  \Config\Services::validation();
+        // $validation->setRule('cod_barras', 'cod_barras', 'required');
+        // $errors = $validation->getErrors();
+
+
+
+
+        $crud->callbackAddField('otro_Producto', function ()
+        {
+            return '<input type="text" " name="otro_Producto">';
+
+        }); $crud->callbackAddField('precio', function ()
+        {
+            return '<input type="text" class="form-controls"  name="precio">';
+        });
