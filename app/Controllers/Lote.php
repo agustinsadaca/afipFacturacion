@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Libraries\GroceryCrud;
 use App\Models\FacturaModel;
+use App\Models\LoteModel;
 
 
 class Lote extends AdminLayout
@@ -27,6 +28,23 @@ class Lote extends AdminLayout
         $crud->fields($arrayColumns);
         $crud->where('id_Producto',$id);
         
+        if ($crud->getState() == 'add') 
+        {
+            $crud->fieldType('id', 'hidden');
+          
+       };
+        if ($crud->getState() == 'edit') 
+        {
+            $crud->fieldType('id', 'hidden');
+          
+       };
+       $crud->callbackAfterInsert(function($stateParameters) use($id){
+
+            $loteModel = new LoteModel();
+            $resultado =  $loteModel->agregarProductoAlLote($stateParameters,$id);
+            return $resultado;
+        });
+
         $data = array();
         $data['grocery'] = $crud;
         return $this->render($data);

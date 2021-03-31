@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="https://secure.mlstatic.com/sdk/javascript/v1/mercadopago.js">
+	window.Mercadopago.setPublishableKey("TEST-13e47bff-5adf-4fff-80a0-9dea0f291474");
+	</script>
 	<meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <?php if (isset($data['js_files'])) {
@@ -30,11 +33,12 @@ endforeach;
     padding: 50px 0 0 10px ;
 }
 .bcode{
-    border:0;
+    margin-top:15px;
+    border:1;
     outline:none;
 }
 .bcode:hover{
-    border:0;
+    border:1;
     outline:none;
 }
 
@@ -67,12 +71,26 @@ if (isset($data['output'])) {
         <script src="<?php echo $file; ?>"></script>
     <?php endforeach;
 }?>
-<form id="formulario">
-  <label for="fname">Total</label><span id="totalCompra" name="totalCompra" ></span>
-  <span id="valorTotal"></span><br>
-  <span>Paga con: </span><input id="pagaCon" /><br>
-  <span>Vuelto : </span><input id="vuelto" type="text" readonly><br>
-  <label for="fname"><a href="<?php echo base_url()?>/PuntoVenta/venta"><input type="button" value="Finalizar Compra"/></a></label><br>
+<form id="formulario" >
+    <label for="fname" class="click">Total</label><span id="totalCompra" name="totalCompra" ></span>
+
+    <span id="valorTotal" class="click"></span><br>
+
+    <span>Paga con: </span><input id="pagaCon" /><br>
+
+    <span>Vuelto : </span><input id="vuelto" type="text" readonly><br>
+
+    <p><input type="radio" name="pago" value="mercadopago">MercadoPago<input type="radio" name="pago" value="Contado">Contado </p>
+    
+    <label for="fname" class="click"><input type="button" value="Finalizar Compra" onclick="finalizarCompra(this)"/></label><br>
+ 
+    <div visibility: hidden>
+    <!-- <script
+    src="https://www.mercadopago.com.ar/integrations/v1/web-payment-checkout.js"
+    data-preference-id="<?php //echo $data['preference']->id; ?>">
+    console.log($data['preference']->id)
+    </script> -->
+    </div><br>
 
 <div class="click" style="padding-bottom:500px">
 
@@ -81,6 +99,13 @@ if (isset($data['output'])) {
 </div>
 <script type="text/javascript" >
        
+        function finalizarCompra(hola){
+                var valorTotal = $("#valorTotal").text();
+                var paga_con = $("#pagaCon").val();
+                window.location = "<?php echo base_url()?>"+"/PuntoVenta/finalizarCompra/"+"<?php echo $data['title'].'/'?>"+String(valorTotal)+"/"+String(paga_con);
+             
+               
+        }
 		function myfunc(control){
 			if(control.value.length>8){
 			 window.location = "<?php echo base_url().'/PuntoVenta/agregarDetalleAutomatico/'?>"+ control.value+"/"+<?= $data['title']?>;
@@ -94,8 +119,13 @@ if (isset($data['output'])) {
             });
         } 
     
-        
+      
         $(document).on('ready', function(){
+
+
+           
+            $('.dataTables_length label select option[value="50"]').prop('selected', true)
+      
             var urlAct= String(window.location)
             var a = urlAct.search("edit") 
             var b = urlAct.search("add") 
@@ -119,10 +149,12 @@ if (isset($data['output'])) {
                 if(e.which == 13) {
                     var totalFact = $('#valorTotal').text();
                     var pagaCon = $(this).val();
-                    var vuelto = totalFact-pagaCon
+                    var vuelto = pagaCon-totalFact
                     $('#vuelto').val(vuelto)
                 }
             });
+
+           
             if(($("#field_id_Producto_chosen .chosen-single span").text()) != "Seleccionar Productos") {
 
                     $("#precio_input_box").trigger("chosen:updated");
@@ -133,9 +165,9 @@ if (isset($data['output'])) {
                         url: 'https://localhost/nuevop/public/Productos/getProductoXNomb/' + $("#field_id_Producto_chosen .chosen-single span").text(),
                     }).done(function (prod) 
                     {
-                        
                         var prodJson = JSON.parse(prod)
-                        $("input[name=precio]").val(prodJson.precio);
+                        
+                        $("input[name=precio_unitario]").val(prodJson.precio);
                         $("input[name=cod_barras]").val(prodJson.cod_barras);
                         
                     })
@@ -156,7 +188,7 @@ if (isset($data['output'])) {
                     {
                         
                         var prodJson = JSON.parse(prod)
-                        $("input[name=precio]").val(prodJson.precio);
+                        $("input[name=precio_unitario]").val(prodJson.precio);
                         $("input[name=cod_barras]").val(prodJson.cod_barras);
 
                         // $("#precio_input_box").trigger("chosen:updated");
@@ -167,24 +199,6 @@ if (isset($data['output'])) {
                }});
             });
 
-
-
-    //     $(document).ready(function(){
-    //     $(".field-form").click(function(){
-    //         $.getJSON("/add.php",{id: $(this).val(), ajax: 'true'}, function(j){
-    //             var options = '';
-    //             for (var i = 0; i < j.length; i++) {
-    //                  options += '<option value="' + j[i].optionValue + '">' + j[i].optionDisplay + '</option>';
-                  
-                   
-    //   }
-      
-    // }}}
-        // var campoDeseleccion = document.getElementsByClassName("fg-toolbar");
-        // var campoDeseleccion2 = document.getElementsByClassName("ui-state-default");
-        // document.addEventListener("click", function(){
-        //     document.getElementsByClassName("bcode")[0].focus();
-        // });
 </script>
 
 </body>

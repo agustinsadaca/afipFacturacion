@@ -120,3 +120,7 @@
         {
             return '<input type="text" class="form-controls"  name="precio">';
         });
+
+        
+
+        <?php echo base_url()?>/PuntoVenta/finalizarCompra/<?php echo $data['title'].'/'?>

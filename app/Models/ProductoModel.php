@@ -40,11 +40,6 @@ class ProductoModel extends Model
         $query1 = $db->query("SELECT producto.cod_barras FROM producto WHERE cod_barras='$codigo_barras'");
         $isCodBarra = $query1->getResultObject();
    
-        if($isCodBarra != NULL){
-            
-            $data['errors'] = 'El codigo de barra ya existe';
-            return  $data;
-        }
         //crear producto
         $query5 = $db->query("SELECT MAX(id_Producto) AS id_Producto FROM producto");
         $results5 = $query5->getResultObject();
@@ -53,6 +48,12 @@ class ProductoModel extends Model
         $nombre = $stateparameters->data['nombre'];
        
         $query5 = $db->query("INSERT INTO `producto`(`id_Producto`, `nombre`, `cod_barras`) VALUES ($idProducto,'$nombre',$codigo_barras)");
+        //setear si existe fecha hasta ultimo precio para ese prod
+        try {
+             $buscarPrecioDesac =  $db->query("SELECT * FROM lista_de_precios INNER JOIN producto ON lista_de_precios.id_Producto=producto.id_Producto WHERE producto.id");
+        } catch (\Throwable $th) {
+
+        }
      
         // crear listaprecio
         $query2 = $db->query("SELECT MAX(id) AS id FROM lista_de_precios");
@@ -61,7 +62,7 @@ class ProductoModel extends Model
         $precio = $stateparameters->data['precio'];
 
         $query = $db->query("INSERT INTO `lista_de_precios`(`id`, `fechaDesde`, `fechaHasta`, `precio`,`id_Producto`) VALUES ($idListaPrecio,NOW(),NULL,$precio,$idProducto)");
-      
+        
         //crear lote
         $query3 = $db->query("SELECT MAX(id) AS id FROM lote");
         $results3 = $query3->getResultObject();
@@ -122,7 +123,7 @@ class ProductoModel extends Model
         // $query1= $db->query("SELECT lista_de_precios.precio, producto.cod_barras FROM producto INNER JOIN lista_de_precios ON producto.id_Producto=lista_de_precios.id_Producto WHERE producto.nombre='$nombre' AND (lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW())");
        
         $result = $query->getResultObject()[0];
-        
+     
         return  $result;
     } 
     public function buscarListaProductos()

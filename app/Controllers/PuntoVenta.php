@@ -7,8 +7,6 @@ use App\Models\ProductoModel;
 use App\Models\DetalleFacturaModel;
 use App\Models\ClienteModel;
 
-
-
 class PuntoVenta extends AdminLayout
 {
 	public function venta()
@@ -20,7 +18,7 @@ class PuntoVenta extends AdminLayout
         ];
 
         $columnas = [
-            'id','date','total','venta','id_cliente'
+            'id','date','total','paga_con','vuelto','medio_pago','id_cliente','venta'
         ];
     
         //// SETS GENERALES
@@ -36,8 +34,11 @@ class PuntoVenta extends AdminLayout
         $crud->fieldType('id', 'readonly');
         $crud->unsetAddFields(['id','total']);
         $crud->setRelation('id_cliente', 'cliente', 'nombre_completo');
+        $crud->defaultOrdering('id', 'asc');
+        $crud->unsetBackToDatagrid();
 
-        if ($crud->getState() == 'add') {
+        if ($crud->getState() == 'add') 
+        {
 
             $crud->fieldType('id', 'hidden');
             $crud->fieldType('total', 'hidden');
@@ -45,10 +46,21 @@ class PuntoVenta extends AdminLayout
 
         $crud->callbackAddField('date',array($this,'_add_default_date_value'));
   
-        $crud->callbackColumn('venta', function ($value, $row) {
-
+        $crud->callbackColumn('venta', function ($value, $row)
+        {
             return '<a class="button" href="'.base_url().'/PuntoVenta/carrito/'.$row->id.'" name="contact_telephone_number" id="something-unique" >Venta</a>';
-            
+        }); 
+
+        $crud->callbackAfterInsert(function ($stateParameters) use ($crud) {
+       
+            $link = base_url()."/PuntoVenta/carrito/".$stateParameters->insertId;
+           
+            $data = "Tu factura ha sido creada redirigiendo a los items de la factura";
+            $data .= "<script type='text/javascript'> window.location = '" . $link . "';</script><div style='display:none'></div>";
+
+            $crud->setLangString('insert_success_message',$data);
+
+            return $crud;
         });
 
             $data = array();
@@ -66,15 +78,15 @@ class PuntoVenta extends AdminLayout
         return $return;
     }   
 
-    public function carrito($id)
+    public function carrito($id,$error=null)
     {
         
         $crud = new GroceryCrud();
         
         $arrayColumns = [
-           'id_detalle_factura','id_Producto','cod_barras','precio','cantidad','subtotal','id_factura'
+           'id_detalle_factura','id_Producto','cod_barras','precio_unitario','cantidad','subtotal','id_factura'
         ];
-        $arrayAddColumns = ['id_Producto','cod_barras','precio','cantidad'];
+        $arrayAddColumns = ['id_Producto','cod_barras','precio_unitario','cantidad'];
         //// SETS GENERALES
         $crud->setTheme('datatables');
         $crud->setTable('detalle_factura');
@@ -90,26 +102,27 @@ class PuntoVenta extends AdminLayout
         $crud->addFields($arrayAddColumns);
         $crud->setRelation('id_Producto','producto','nombre');
         $crud->displayAs('id_Producto','Productos');
+        $crud->limit(25);
 
         $crud->unsetEditFields([  'id_detalle_factura','id_Producto','cod_barras','precio','cantidad','subtotal','id_factura']);
 
-        if ($crud->getState() == 'add') {
-
+        if ($crud->getState() == 'add') 
+        {
             $crud->fieldType('id_factura', 'hidden'); 
             $crud->fieldType('id_detalle_factura', 'hidden'); 
-       }
-        if ($crud->getState() == 'edit') {
-
+        }
+        if ($crud->getState() == 'edit') 
+        {
             $crud->fieldType('subtotal', 'readonly'); 
             $crud->fieldType('id_factura', 'hidden'); 
             $crud->fieldType('id_detalle_factura', 'hidden'); 
-       }
+        }
 
         $productoModel = new ProductoModel();
         $resultados =  $productoModel->buscarListaProductos();
-
     
-        $crud->callbackAfterInsert(function ($stateParameters) use ($id,$crud) {
+        $crud->callbackAfterInsert(function ($stateParameters) use ($id,$crud) 
+        {
            
             $detalleFacturaModel = new DetalleFacturaModel();
 
@@ -117,12 +130,22 @@ class PuntoVenta extends AdminLayout
          
             return $resultado;
         });
-        $crud->callbackUpdate(function ($stateParameters) use ($id,$crud) {
+        $crud->callbackUpdate(function ($stateParameters) use ($id,$crud) 
+        {
       
             $detalleFacturaModel = new DetalleFacturaModel();
 
             $resultado =  $detalleFacturaModel->editarProductoDetalle($stateParameters,$id);
            
+            return $resultado;
+        });
+        $crud->callbackBeforeDelete(function ($stateParameters) 
+        {
+            
+            $detalleFacturaModel = new DetalleFacturaModel();
+
+            $resultado =  $detalleFacturaModel->deleteAumentarStock($stateParameters);
+         
             return $resultado;
         });
 
@@ -142,15 +165,6 @@ class PuntoVenta extends AdminLayout
 
             return "<p>".$resultado."</p>";
         });
-
-        $crud->callbackColumn('precio', function ($value, $row) {
-
-            $precio = new ProductoModel();
-            $resultado =  $precio->traerPrecioProd($value,$row);
-
-            return "<p>".$resultado."</p>";
-        });
-        
     
         $crud->callbackAddField('cantidad', function ()
         {
@@ -164,8 +178,15 @@ class PuntoVenta extends AdminLayout
            $resultado =  $cantidad->buscarCantidadDetalle($primaryKeyValue);
             return '<input type="number" value="'.$resultado.'" name="num">';
         });
+        // $mercadopago = new MercadoPago1();
+        // $preference = $mercadopago->mercadoP();
 
+        // $data['preference'] = $preference;
 
+        if($error=='su producto no existe, ingreselo de nuevo o agregue el producto'){
+            
+            $data['errors'] = [$error];
+        }
         $data['grocery'] = $crud;
         $data['view'] = 'carrito'; 
         $data['title'] = (string)$id;
@@ -176,9 +197,12 @@ class PuntoVenta extends AdminLayout
     function agregarDetalleAutomatico($codBarra,$id) 
     {
         $guardarDetalle = new DetalleFacturaModel();
-
         $guardarDetalle->agregarDetalleAutomatico($codBarra,$id);
-       
+        if($guardarDetalle==false){
+            // var_dump('hola');
+            header('Location:'.base_url().'/PuntoVenta/carrito/'.$id);
+            exit;
+        }
         return ;
     }
 
@@ -192,6 +216,15 @@ class PuntoVenta extends AdminLayout
 
    }
     
+    public function finalizarCompra($idFactura,$totalFact=null,$pagaCon=null)
+    {
+       
+        $finalizarFactura = new FacturaModel();
+
+        $result= $finalizarFactura->finalizarCompra($idFactura,$totalFact,$pagaCon);
     
+        return  json_encode($totalFact);
+
+    }
 
 }
