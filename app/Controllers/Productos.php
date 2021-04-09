@@ -37,17 +37,16 @@ class Productos extends AdminLayout
         $crud->fieldType('fecha Cambio precio','datetime');
         $crud->fieldType('Cantidad','float');
         $crud->unsetColumns(['fechaCompra','fechaVencimiento']);
-        $crud->requiredFields(['nombre','cod_barras','fechaVencimiento','Cantidad','precio']);
+        $crud->requiredFields(['nombre','cod_barras','fechaVencimiento','Cantidad']);
+        $crud->unsetEditFields(['id_Producto','nombre','cod_barras','precio']);
 
         if ($crud->getState() == 'add') {
-            $crud->fieldType('id_Producto', 'hidden'); 
+            $crud->fieldType('id_Producto', 'hidden');
+            $crud->setRule('cod_barras','Cod barras','is_unique[producto.cod_barras]');
+            $crud->setRule('nombre','Nombre','is_unique[producto.nombre]');
+            $crud->setRule('Cantidad','Cantidad','is_natural');
+            $crud->setRule('precio','Precio','is_natural'); 
         };
-    
-
-        $crud->setRule('cod_barras','Cod barras','is_unique[producto.cod_barras]');
-        $crud->setRule('nombre','Nombre','is_unique[producto.nombre]');
-        $crud->setRule('Cantidad','Cantidad','is_natural_no_zero');
-        $crud->setRule('precio','Precio','is_natural_no_zero');
 
         $crud->setActionButton('Admin lotes de producto', 'el el-user', function ($primaryKey) { 
             return site_url('/Lote/lotes/' . $primaryKey); 
@@ -72,6 +71,35 @@ class Productos extends AdminLayout
             }
             return $resultado;
         });
+
+        $crud->callbackUpdate(function ($stateParameters) 
+        {
+            $producto = new ProductoModel();
+            $resultado =  $producto->editarProducto($stateParameters);
+            return;
+        });
+        $crud->callbackColumn('Cantidad Total de Producto', function ($value, $row) {
+
+            $producto = new ProductoModel();
+            $resultado =  $producto->buscarCantTotalLotes($row);
+
+            return "<p>".$resultado."</p>";
+        });
+        $crud->callbackColumn('precio Actual', function ($value, $row) {
+
+            $producto = new ProductoModel();
+            $resultado =  $producto->buscarPrecioActual($row);
+
+            return "<p>".$resultado."</p>";
+        });
+        
+        $crud->callbackColumn('fecha ultimo cambio de precio', function ($value, $row) {
+
+            $producto = new ProductoModel();
+            $resultado =  $producto->UltimaFechaCambioPrecio($row);
+
+            return "<p>".$resultado."</p>";
+        });
         
         $currentURL = current_url();
         $edit = strpos($currentURL,'edit');
@@ -79,7 +107,6 @@ class Productos extends AdminLayout
         if($add !== false || $edit !== false ){
             $data['errors'] = $errors;
         }
-   
 
           //SETS DATA TO VIEW
         $data = array();

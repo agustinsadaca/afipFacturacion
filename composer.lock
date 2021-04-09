@@ -4,8 +4,59 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0fd09e9396132346238e52b22b2b97ce",
+    "content-hash": "b1f0cee6756a284423bd51655c8b2de0",
     "packages": [
+        {
+            "name": "afipsdk/afip.php",
+            "version": "v0.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/AfipSDK/afip.php.git",
+                "reference": "c6a5075a4fe5b2465b35364ae69e633853a509b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/AfipSDK/afip.php/zipball/c6a5075a4fe5b2465b35364ae69e633853a509b5",
+                "reference": "c6a5075a4fe5b2465b35364ae69e633853a509b5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Afip.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Afip SDK",
+                    "email": "afipsdk@gmail.com"
+                }
+            ],
+            "description": "Libreria para usar los Web Services de AFIP (Argentina) ",
+            "homepage": "https://github.com/afipsdk/afip.php",
+            "keywords": [
+                "afip",
+                "cae",
+                "contribuyente",
+                "facturacion-electronica",
+                "gratis",
+                "libreria",
+                "padron",
+                "soap"
+            ],
+            "support": {
+                "issues": "https://github.com/AfipSDK/afip.php/issues",
+                "source": "https://github.com/AfipSDK/afip.php/tree/v0.7.0"
+            },
+            "time": "2021-01-21T00:48:28+00:00"
+        },
         {
             "name": "doctrine/annotations",
             "version": "1.12.1",

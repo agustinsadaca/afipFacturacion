@@ -25,11 +25,15 @@ class ListaPrecios extends AdminLayout
         $crud->editFields($arrayColumns);
         $crud->fields($arrayColumns);
         $crud->where('id_Producto',$id);
-        
+        $crud->unsetAdd();
+        $crud->unsetEdit();
+        $crud->unsetDelete();
+
+
         $data = array();
         $data['grocery'] = $crud;
         return $this->render($data);
-
+        
 
     }
 
