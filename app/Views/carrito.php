@@ -6,11 +6,12 @@
 	</script>
 	<meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="<?php echo(base_url().'/bootstrap.min.css')?>"> 
 <?php if (isset($data['js_files'])) {
     foreach ($data['css_files'] as $file): 
-       
-    ?>
       
+    ?>
+
         <link type="text/css" rel="stylesheet" href="<?php echo $file; ?>" />
 <?php
 endforeach;
@@ -33,21 +34,49 @@ endforeach;
     padding: 50px 0 0 10px ;
 }
 .bcode{
-    margin-top:15px;
-    border:1;
+    border:2;
     outline:none;
 }
 .bcode:hover{
     border:1;
     outline:none;
 }
-
+.labelsAppend{
+    display: flex;
+}
+.inputLabel{
+    width:20%;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+table{
+    table-layout: fixed;
+    width: 700px;
+}
+.compraDatos{
+    margin-left:30px;
+}
+.finalizarComp{
+    margin-top:20px;
+    border-radius:2px;
+    box-shadow: none;
+}
+.barcodes{
+    padding:25px 10px;
+}
 
 </style>
 
 <?= $menu; ?>
-<div class="click">
-    <input class="bcode" name="barcode"  autofocus onchange="myfunc(this)" ></input>
+<div class="click barcodes">
+    <div class="input-group labelsAppend">
+        <div class="input-group-prepend">
+            <img class="input-group-text" src="<?php echo(base_url().'/barcode-solid.png')?>" />
+        </div>
+        <input  class="form-control inputLabel bcode" name="barcode"  autofocus onchange="myfunc(this)"  >
+    </div>
+
+    <!-- <input class="bcode" name="barcode"  autofocus onchange="myfunc(this)" ></input> -->
 </div>
 <?php foreach($data['errors'] as $error) { ?>
         <div  class="errors_validation click">   
@@ -55,7 +84,7 @@ endforeach;
         </div>
 <?php } ?>
 
-	<div class="click" style='height: 30px;'></div>
+	<div class="click" style='height: 10px;'></div>
     <div  style="padding: 10px">
 
 <?php
@@ -72,25 +101,60 @@ if (isset($data['output'])) {
     <?php endforeach;
 }?>
 <form id="formulario" >
-    <label for="fname" class="click">Total</label><span id="totalCompra" name="totalCompra" ></span>
+    <!-- <label for="fname" class="click">Total</label><span id="totalCompra" name="totalCompra" ></span>
 
     <span id="valorTotal" class="click"></span><br>
 
     <span>Paga con: </span><input id="pagaCon" /><br>
 
-    <span>Vuelto : </span><input id="vuelto" type="text" readonly><br>
+    <span>Vuelto : </span><input id="vuelto" type="text" readonly><br> -->
 
-    <p><input type="radio" name="pago" value="mercadopago">MercadoPago<input type="radio" name="pago" value="Contado">Contado </p>
+    <p class="compraDatos"><input type="radio" name="pago" value="mercadopago">MercadoPago<input type="radio" name="pago" value="Contado">Contado </p>
     
-    <label for="fname" class="click"><input type="button" value="Finalizar Compra" onclick="finalizarCompra(this)"/></label><br>
- 
-    <div visibility: hidden>
+    <TABLE class="compraDatos">
+        <tr>
+            <td>
+                <div class="input-group labelsAppend click" >
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Total</span>
+                    </div>
+                    <span id="valorTotal" class="form-control inputLabel" readonly>
+                </div>
+            </td>
+          
+            <td>
+                <div class="input-group labelsAppend">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Paga con</span>
+                    </div>
+                    <input id="pagaCon" class="form-control inputLabel" >
+                </div>
+            </td>
+          
+            <td>
+                <div class="input-group labelsAppend">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Vuelto</span>
+                    </div>
+                    <input class="form-control inputLabel vuelto" id="vuelto" readonly >
+                </div>
+            </td>
+          
+       
+          
+        </tr>  
+    </TABLE> 
+
     <!-- <script
     src="https://www.mercadopago.com.ar/integrations/v1/web-payment-checkout.js"
     data-preference-id="<?php //echo $data['preference']->id; ?>">
     console.log($data['preference']->id)
     </script> -->
-    </div><br>
+    
+    <label for="fname" class="click compraDatos "><input class="finalizarComp" type="button" value="Finalizar Compra" onclick="finalizarCompra(this)"/></label><br>
+ 
+   
+    
 
 <div class="click" style="padding-bottom:500px">
 
@@ -135,7 +199,7 @@ if (isset($data['output'])) {
             $.ajax({
                 async: false,
                 method: "GET",
-                url: 'https://localhost/nuevop/public/PuntoVenta/getTotalFactura/' + <?= $data['title']?>,
+                url: "<?php echo base_url().'/PuntoVenta/getTotalFactura/'.$data['title']?>",
             }).done(function (total) 
             {
                 
@@ -146,6 +210,8 @@ if (isset($data['output'])) {
                 
             })
             $('#pagaCon').on('keypress',function(e) {
+                
+
                 if(e.which == 13) {
                     var totalFact = $('#valorTotal').text();
                     var pagaCon = $(this).val();
@@ -162,7 +228,7 @@ if (isset($data['output'])) {
                     $.ajax({
                         async: false,
                         method: "GET",
-                        url: 'https://localhost/nuevop/public/Productos/getProductoXNomb/' + $("#field_id_Producto_chosen .chosen-single span").text(),
+                        url: "<?php echo base_url()?>"+'/Productos/getProductoXNomb/' + $("#field_id_Producto_chosen .chosen-single span").text(),
                     }).done(function (prod) 
                     {
                         var prodJson = JSON.parse(prod)
@@ -183,7 +249,7 @@ if (isset($data['output'])) {
                     $.ajax({
                         async: false,
                         method: "GET",
-                        url: 'https://localhost/nuevop/public/Productos/getProductoXNomb/' + $("#field_id_Producto_chosen .chosen-single span").text(),
+                        url: "<?php echo base_url()?>"+'/Productos/getProductoXNomb/' + $("#field_id_Producto_chosen .chosen-single span").text(),
                     }).done(function (prod) 
                     {
                         
