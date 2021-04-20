@@ -46,5 +46,6 @@ class FacturaModel extends Model
         exit;
         
     }
+    
 
 }

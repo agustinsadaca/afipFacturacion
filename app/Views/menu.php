@@ -9,7 +9,8 @@ body{
 
  .navbar {
   overflow: hidden;
-  background-color: #42A0FF;
+  background-color: #0069d9;
+  display: block !important; padding: 0 !important;
 }
 
 /* Navigation links */

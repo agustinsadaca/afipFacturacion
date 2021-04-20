@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+
     <script src="https://secure.mlstatic.com/sdk/javascript/v1/mercadopago.js">
 	window.Mercadopago.setPublishableKey("TEST-13e47bff-5adf-4fff-80a0-9dea0f291474");
 	</script>
@@ -37,6 +38,9 @@ endforeach;
     border:2;
     outline:none;
 }
+.form-control:focus{
+    box-shadow: 0 0 0 0.1rem rgba(0, 123, 255, 0.25)!important;
+}
 .bcode:hover{
     border:1;
     outline:none;
@@ -65,9 +69,19 @@ table{
     padding:25px 10px;
 }
 
+
 </style>
 
 <?= $menu; ?>
+<?php foreach($data['errors'] as $error) { ?>
+        <div  class="errors_validation click">   
+            <?php echo $error;?>
+        </div>
+<?php } ?>
+
+	<div class="click" style='height: 10px;'></div>
+    <div  style="padding: 10px">
+
 <div class="click barcodes">
     <div class="input-group labelsAppend">
         <div class="input-group-prepend">
@@ -78,14 +92,6 @@ table{
 
     <!-- <input class="bcode" name="barcode"  autofocus onchange="myfunc(this)" ></input> -->
 </div>
-<?php foreach($data['errors'] as $error) { ?>
-        <div  class="errors_validation click">   
-            <?php echo $error;?>
-        </div>
-<?php } ?>
-
-	<div class="click" style='height: 10px;'></div>
-    <div  style="padding: 10px">
 
 <?php
 
@@ -186,8 +192,6 @@ if (isset($data['output'])) {
       
         $(document).on('ready', function(){
 
-
-           
             $('.dataTables_length label select option[value="50"]').prop('selected', true)
       
             var urlAct= String(window.location)

@@ -48,7 +48,7 @@ class PuntoVenta extends AdminLayout
   
         $crud->callbackColumn('venta', function ($value, $row)
         {
-            return '<a class="button" href="'.base_url().'/PuntoVenta/carrito/'.$row->id.'" name="contact_telephone_number" id="something-unique" >Venta</a>';
+            return '<a class=" btn btn-block btn-success btn-sm" href="'.base_url().'/PuntoVenta/carrito/'.$row->id.'" name="contact_telephone_number" id="something-unique" >Venta</a>';
         }); 
 
         $crud->callbackAfterInsert(function ($stateParameters) use ($crud) {

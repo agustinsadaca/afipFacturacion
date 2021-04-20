@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <?php if (isset($data['js_files'])) {
     foreach ($data['css_files'] as $file):
+        // echo '<pre>';
+        // var_dump($data['css_files']);die;
     ?>
         <link type="text/css" rel="stylesheet" href="<?php echo $file; ?>" />
 <?php

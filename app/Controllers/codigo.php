@@ -124,3 +124,8 @@
         
 
         <?php echo base_url()?>/PuntoVenta/finalizarCompra/<?php echo $data['title'].'/'?>
+
+
+
+
+        session_set_cookie_params(100000,"/");
