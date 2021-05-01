@@ -180,7 +180,6 @@ class PuntoVenta extends AdminLayout
         });
         // $mercadopago = new MercadoPago1();
         // $preference = $mercadopago->mercadoP();
-
         // $data['preference'] = $preference;
 
         if($error=='su producto no existe, ingreselo de nuevo o agregue el producto'){
