@@ -147,7 +147,7 @@ function getSavedValue(v){
     return localStorage.getItem(v);
 }
 $(function() {
-    function mifunc(){
+    function myfunc(){
         var fD = $('#post_at').value();
         var fH = $('#post_at_to_date').value();
         console.log(fD);

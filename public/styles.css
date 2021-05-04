@@ -142,6 +142,10 @@ text-decoration:#1A1A1A ;
 
     text-shadow: 0.1em 0.1em #333
 }
+.hometext1{
+
+    text-shadow: 0.1em 0.1em  rgb(134, 134, 134);
+}
 .hhome{
 
     padding-top: 30px ;

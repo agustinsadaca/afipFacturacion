@@ -19,25 +19,41 @@ class Afip extends AdminLayout
         $crud = new GroceryCrud();
         
         $arrayColumns = [
-            'id','date','cliente','total','tipoFactura','estado_factura'
+            'id','fecha_creacion','total','nro_cae','id_cliente','id_tipo_comprobante'
         ];
 
 
         //// SETS GENERALES
         $crud->setTheme('datatableCheckBox');
-        $crud->setTable('factura');
-        $crud->displayAs('date','Fecha de emisión');
-        $crud->setSubject('factura', 'Facturacion Afip');
+        $crud->setTable('factura_afip');
+        $crud->displayAs('fecha_creacion','Fecha de creación');
+        $crud->displayAs('id_tipo_comprobante','Tipo de Comprobante');
+        $crud->displayAs('id','Id');
+        $crud->setSubject('Factura Afip');
         $crud->columns($arrayColumns);
         $crud->editFields($arrayColumns);
-        $crud->fields($arrayColumns);      
-        $crud->unsetAdd(); 
-        $crud->unsetEdit(); 
-        $crud->unsetDelete();
+        $crud->fields($arrayColumns); 
+        $crud->setRelation('id_cliente', 'cliente', '{nombre} {apellido}');
+        $crud->setRelation('id_tipo_comprobante', 'tipo_comprobante', 'nombre_tipo');
+        // $crud->setRule('total','total','is_natural_no_zero');
+
      
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $fD = $_POST['fechaDesde'];
-            $fH = $_POST['fechaHasta'];
+        // $crud->unsetAdd(); 
+        // $crud->unsetEdit(); 
+        // $crud->unsetDelete();
+        if ($crud->getState() == 'add') {
+            $crud->fieldType('id', 'hidden'); 
+            $crud->fieldType('nro_cae', 'hidden'); 
+       }
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST" ) {
+           try {
+                $fD = $_POST['fechaDesde'];
+                $fH = $_POST['fechaHasta'];
+           } catch (\Throwable $th) {
+               
+           }
+        
            
             if(empty($fd)){}
         }
@@ -46,6 +62,8 @@ class Afip extends AdminLayout
             try {
             $fechaDesde = explode('/',$fD);
             $fechaDesde = $fechaDesde[2].$fechaDesde[0].$fechaDesde[1];
+            // var_dump($fechaDesde);
+        
             } catch (\Throwable $th) {
                 
             }
@@ -56,13 +74,25 @@ class Afip extends AdminLayout
             }catch (\Throwable $th) {
               
             }
-       
-            if( $fD!="" && $fH=="" ){
-                $crud->where("id IN (SELECT id FROM factura WHERE date >= $fechaDesde)");
-            }elseif( $fH!="" && $fD==""){
-                $crud->where("id IN (SELECT id FROM factura WHERE Convert(date,date) <= $fechaHasta)");
-            }elseif($fD!="" && $fH!=""){
-                $crud->where("id IN (SELECT id FROM factura WHERE date >= $fechaDesde AND Convert(date,date) <= $fechaHasta)");   
+            // var_dump($fechaDesde);
+            // var_dump($fechaHasta);
+
+            if( $fechaDesde!="" && is_array($fechaHasta) ){
+                var_dump($fechaDesde);
+                $crud->where(
+                    "factura_afip.fecha_creacion>=$fechaDesde"
+                );
+            }elseif( $fechaHasta!="" && is_array($fechaDesde)){
+                $crud->where(
+                    "factura_afip.fecha_creacion<=$fechaHasta"
+                );
+            }elseif(!is_array($fechaHasta) && !is_array($fechaDesde)){
+                $crud->where(
+                    "factura_afip.fecha_creacion<=$fechaHasta"
+                );   
+                $crud->where(
+                    "factura_afip.fecha_creacion>=$fechaDesde"
+                );
             }
             
         }

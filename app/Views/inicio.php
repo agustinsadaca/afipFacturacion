@@ -27,7 +27,7 @@ endforeach;
 <section id="hero">
     <div class="container">
         <div class="content-center hhome" >
-            <h1 class="mt-5 hometext" >Casa Sadaca</h1>
+            <h1 class="mt-5 hometext1" >Casa Sadaca</h1>
             <p class="hometext phome">Casa Sadaca o como lo llaman de antaño "Las puertas azules", es un antiguo negocio familiar que data
                     de los comienzos del siglo XX</p>
         </div>
