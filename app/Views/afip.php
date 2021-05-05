@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+        <link rel="stylesheet" href="<?php echo(base_url().'/bootstrap.min.css')?>"> 
+
 	<meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -37,7 +39,8 @@ endforeach;
 .table-content{border-top:#CCCCCC 4px solid; width:50%;}
 .table-content th {padding:5px 20px; background: #F0F0F0;vertical-align:top;} 
 .table-content td {padding:5px 20px; border-bottom: #F0F0F0 1px solid;vertical-align:top;} 
-.fechaSearch{margin-left:10px;margin-top:50px}
+.fechaSearch{margin-left:10px;align-self: center;
+}
 .input-control{border-radius:2px;padding:4px}
 .delete_all_button{top:0px!important;}
 .navbar{display: block !important; padding: 0 !important;margin: 0 !important;}
@@ -83,6 +86,13 @@ endforeach;
 	left: 3px;
 	color: #fff;
 }
+.cabecera{
+    display: flex;
+    justify-content: space-between;
+}
+.status{
+    align-self: center;
+}
 </style>
 
 <?= $menu; ?>
@@ -99,16 +109,28 @@ endforeach;
 $post_at = "";
 $post_at_to_date = "";
 ?>
-<div class="fechaSearch">
-<form name="frmSearch" method="post" action="#" onsubmit="return myfunc(this);">
-	<p class="search_input">
-	<input type="text" placeholder="Fecha Desde" id="post_at" name="fechaDesde"  value="<?php echo $post_at; ?>" class="input-control" onchange='saveValue(this);' />
-	<input type="text" placeholder="Fecha Hasta" id="post_at_to_date" name="fechaHasta" style="margin-left:10px"  value="<?php echo $post_at_to_date; ?>" class="input-control"  onchange='saveValue(this);'/>			 
-	<input type="submit" id="goSubmit" name="go" value="Buscar por fecha" class="btn btn-primary btn-sm bfecha" >
-    </p>
-</form>
+<div class="cabecera">
+    <div class="fechaSearch">
+    <form name="frmSearch" method="post" action="#" onsubmit="return myfunc(this);">
+        <p class="search_input">
+        <input type="text" placeholder="Fecha Desde" id="post_at" name="fechaDesde"  value="<?php echo $post_at; ?>" class="input-control" onchange='saveValue(this);' />
+        <input type="text" placeholder="Fecha Hasta" id="post_at_to_date" name="fechaHasta" style="margin-left:10px"  value="<?php echo $post_at_to_date; ?>" class="input-control"  onchange='saveValue(this);'/>			 
+        <input type="submit" id="goSubmit" name="go" value="Buscar por fecha" class="btn btn-primary btn-sm bfecha" >
+        </p>
+    </form>
+    </div>
+    <div class="status">
+        <div class="input-group labelsAppend">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Vuelto</span>
+            </div>
+            <input class="form-control inputLabel vuelto" id="vuelto" readonly >
+        </div>
+
+    </div>
 </div>
-        <?php
+
+<?php
 if (isset($data['output'])) {
     echo $data['output'];
 }

@@ -129,3 +129,51 @@
 
 
         session_set_cookie_params(100000,"/");
+
+
+
+
+
+
+
+
+
+
+
+
+
+        Afip------------------------------------
+        
+        // echo 'Este es el estado del servidor:';
+        // echo '<pre>';
+        // print_r($server_status);
+        
+        // $voucher_info = $afip->ElectronicBilling->GetVoucherInfo(1,1,6); //Devuelve la información del comprobante 1 para el punto de venta 1 y el tipo de comprobante 6 (Factura B)
+        
+        // echo '<pre>';
+        // var_dump($voucher_info);die;
+        
+        // if($voucher_info === NULL){
+        //     echo 'El comprobante no existe';
+        // }
+        // else{
+        //     echo 'Esta es la información del comprobante:';
+        //     echo '<pre>';
+        //     print_r($voucher_info);
+        //     echo '</pre>';
+        // }
+        // var_dump($iva);die;
+        
+        // echo '<pre>';
+        // $sales_points= $afip->ElectronicBilling->GetVoucherTypes();
+        // var_dump($sales_points);die;
+        
+        // $sales_points= $afip->ElectronicBilling->GetVoucherTypes();
+        // // var_dump($sales_points);die;
+        // $last_voucher = $afip->ElectronicBilling->GetLastVoucher(1,6);
+        // var_dump($last_voucher);
+        
+        // $res = $afip->ElectronicBilling->CreateNextVoucher($data);
+        // $last_voucher = $afip->ElectronicBilling->GetVoucherInfo($last_voucher,1,6);
+        // var_dump($last_voucher);
+        // var_dump($res);die;

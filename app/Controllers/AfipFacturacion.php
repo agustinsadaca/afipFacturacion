@@ -1,0 +1,197 @@
+<?php
+
+namespace App\Controllers;
+use App\Libraries\GroceryCrud;
+use App\Models\FacturaModel;
+use Afip;
+// include '../..//src/Afip.php'; 
+
+
+
+
+class AfipFacturacion extends AdminLayout
+{
+    public function afip()
+	{
+        global $fD;
+        global $fH;
+
+        
+        $crud = new GroceryCrud();
+        
+        $arrayColumns = [
+            'id','fecha_creacion','total','nro_cae','id_cliente','id_tipo_comprobante'
+        ];
+
+
+        //// SETS GENERALES
+        $crud->setTheme('datatableCheckBox');
+        $crud->setTable('factura_afip');
+        $crud->displayAs('fecha_creacion','Fecha de creación');
+        $crud->displayAs('id_tipo_comprobante','Tipo de Comprobante');
+        $crud->displayAs('id','Id');
+        $crud->setSubject('Factura Afip');
+        $crud->columns($arrayColumns);
+        $crud->editFields($arrayColumns);
+        $crud->fields($arrayColumns); 
+        $crud->setRelation('id_cliente', 'cliente', '{nombre} {apellido}');
+        $crud->setRelation('id_tipo_comprobante', 'tipo_comprobante', 'nombre_tipo');
+        // $crud->setRule('total','total','is_natural_no_zero');
+        // $crud->unsetAdd(); 
+        // $crud->unsetEdit(); 
+        // $crud->unsetDelete();
+
+        if ($crud->getState() == 'add') {
+            $crud->fieldType('id', 'hidden'); 
+            $crud->fieldType('nro_cae', 'hidden'); 
+       }
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST" ) {
+           try {
+                $fD = $_POST['fechaDesde'];
+                $fH = $_POST['fechaHasta'];
+           } catch (\Throwable $th) {    
+           }
+            if(empty($fd)){}
+        }
+        if($fD!="" || $fH!="" ){
+         
+            try {
+            $fechaDesde = explode('/',$fD);
+            $fechaDesde = $fechaDesde[2].$fechaDesde[0].$fechaDesde[1];
+     
+            } catch (\Throwable $th) {   
+            }
+            try{
+            $fechaHasta = explode('/',$fH);
+            $fechaHasta = $fechaHasta[2].$fechaHasta[0].$fechaHasta[1];
+            }
+            catch (\Throwable $th) {
+            }
+
+            if( $fechaDesde!="" && is_array($fechaHasta) ){
+                $crud->where(
+                    "factura_afip.fecha_creacion>=$fechaDesde"
+                );
+            }elseif( $fechaHasta!="" && is_array($fechaDesde)){
+                $crud->where(
+                    "factura_afip.fecha_creacion<=$fechaHasta"
+                );
+            }elseif(!is_array($fechaHasta) && !is_array($fechaDesde)){
+                $crud->where(
+                    "factura_afip.fecha_creacion<=$fechaHasta"
+                );   
+                $crud->where(
+                    "factura_afip.fecha_creacion>=$fechaDesde"
+                );
+            }
+            
+        }
+        $statusAfipServer = json_encode($this->getStatusSerber());
+        // $this->generarFacturaAfip();
+ 
+        $data = array();
+        $data['serverStatus'] = $statusAfipServer;
+        $data['view'] = 'afip.php';
+        $data['grocery'] = $crud;
+        return $this->render($data);
+    }
+
+    public function getStatusSerber()
+    {   
+        try {
+            $afip = new Afip(array('CUIT' => 23213764519,'production'=>False));
+            $server_status = $afip->ElectronicBilling->GetServerStatus();
+            
+            if($server_status->AppServer == "OK")
+            {
+                return true;
+            }else{
+                return false;
+            }
+        } catch (\Throwable $th) {
+            return false;
+        }
+    
+    }
+    public function generarFacturaAfip()
+    {
+        $data = array(
+            'CantReg' 		=> 1, // Cantidad de comprobantes a registrar
+            'PtoVta' 		=> 1, // Punto de venta
+            'CbteTipo' 		=> 6, // Tipo de comprobante (ver tipos disponibles) 
+            'Concepto' 		=> 1, // Concepto del Comprobante: (1)Productos, (2)Servicios, (3)Productos y Servicios
+            'DocTipo' 		=> 99, // Tipo de documento del comprador (ver tipos disponibles)
+            'DocNro' 		=> 0, // Numero de documento del comprador
+            'CbteDesde' 	=> 1, // Numero de comprobante o numero del primer comprobante en caso de ser mas de uno
+            'CbteHasta' 	=> 1, // Numero de comprobante o numero del ultimo comprobante en caso de ser mas de uno
+            'CbteFch'  		=> intval(date('Ymd')), // (Opcional) Fecha del comprobante (yyyymmdd) o fecha actual si es nulo
+            'ImpTotal' 		=> 10, // Importe total del comprobante
+            'ImpTotConc' 	=> 0, // Importe neto no gravado
+            'ImpNeto' 		=> 8.26, // Importe neto gravado
+            'ImpOpEx' 		=> 0, // Importe exento de IVA
+            'ImpIVA' 		=> 1.73, //Importe total de IVA
+            'ImpTrib' 		=> 0, //Importe total de tributos
+            'FchServDesde' 	=> NULL, // (Opcional) Fecha de inicio del servicio (yyyymmdd), obligatorio para Concepto 2 y 3
+            'FchServHasta' 	=> NULL, // (Opcional) Fecha de fin del servicio (yyyymmdd), obligatorio para Concepto 2 y 3
+            'FchVtoPago' 	=> NULL, // (Opcional) Fecha de vencimiento del servicio (yyyymmdd), obligatorio para Concepto 2 y 3
+            'MonId' 		=> 'PES', //Tipo de moneda usada en el comprobante (ver tipos disponibles)('PES' para pesos argentinos) 
+            'MonCotiz' 		=> 1, // Cotización de la moneda usada (1 para pesos argentinos)  
+            // 'CbtesAsoc' 	=> array( // (Opcional) Comprobantes asociados
+            //     array(
+            //         'Tipo' 		=> 8, // Tipo de comprobante (ver tipos disponibles) 
+            //         'PtoVta' 	=> 1, // Punto de venta
+            //         'Nro' 		=> 11, // Numero de comprobante
+            //         // 'Cuit' 		=> 20111111112 // (Opcional) Cuit del emisor del comprobante
+            //         )
+            //     ),
+            // 'Tributos' 		=> array( // (Opcional) Tributos asociados al comprobante
+            // 	array(
+            // 		'Id' 		=>  99, // Id del tipo de tributo (ver tipos disponibles) 
+            // 		'Desc' 		=> 'Ingresos Brutos', // (Opcional) Descripcion
+            // 		'BaseImp' 	=> 150, // Base imponible para el tributo
+            // 		'Alic' 		=> 5.2, // Alícuota
+            // 		'Importe' 	=> 7.8 // Importe del tributo
+            // 	)
+            // ), 
+            'Iva' 			=> array( // (Opcional) Alícuotas asociadas al comprobante
+                array(
+                    'Id' 		=> 5, // Id del tipo de IVA (ver tipos disponibles) 
+                    'BaseImp' 	=> 8.26, // Base imponible
+                    'Importe' 	=> 1.73 // Importe 
+                )
+            // ), 
+            // 'Opcionales' 	=> array( // (Opcional) Campos auxiliares
+            // 	array(
+            // 		'Id' 		=> 17, // Codigo de tipo de opcion (ver tipos disponibles) 
+            // 		'Valor' 	=> 2 // Valor 
+            // 	)
+            // ), 
+            // 'Compradores' 	=> array( // (Opcional) Detalles de los clientes del comprobante 
+            // 	array(
+            // 		'DocTipo' 		=> 80, // Tipo de documento (ver tipos disponibles) 
+            // 		'DocNro' 		=> 20111111112, // Numero de documento
+            // 		'Porcentaje' 	=> 100 // Porcentaje de titularidad del comprador
+            // 	)
+            )
+        );
+        // phpinfo();die;
+        $afip = new Afip(array('CUIT' => 23213764519,'production'=>False));
+        
+        $neto = round(10 / 1.21, 2);
+        $iva =  round($neto * 0.21, 2);
+        // var_dump($iva);die;
+        $server_status = $afip->ElectronicBilling->GetServerStatus();
+        // var_dump($server_status);die;
+        
+      
+        $res = $afip->ElectronicBilling->CreateNextVoucher($data);
+        $res['CAE']; //CAE asignado el comprobante
+        $res['CAEFchVto']; //Fecha de vencimiento del CAE (yyyy-mm-dd)
+        $res['voucher_number'];
+        var_dump($res);die;
+        
+    }
+
+
+}
