@@ -7,10 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
 <?php if (isset($data['js_files'])) {
-    //  var_dump($data['js_files']);die;
+
     foreach ($data['css_files'] as $file):
-        // echo '<pre>';
-        // var_dump($data['css_files']);die;
+ 
     ?>
     
         <link type="text/css" rel="stylesheet" href="<?php echo $file; ?>" />
@@ -41,7 +40,9 @@ endforeach;
 .table-content td {padding:5px 20px; border-bottom: #F0F0F0 1px solid;vertical-align:top;} 
 .fechaSearch{margin-left:10px;align-self: center;
 }
-.input-control{border-radius:2px;padding:4px}
+.input-control{border-radius:4px;padding:4px;border-width: 2px;
+   
+}
 .delete_all_button{top:0px!important;}
 .navbar{display: block !important; padding: 0 !important;margin: 0 !important;}
 .bfecha{margin-bottom:4px;margin-left:10px}
@@ -93,6 +94,19 @@ endforeach;
 .status{
     align-self: center;
 }
+.labelsAppend{display: flex;}
+.exito{
+    background-color: #28a745 !important;
+    width: 20% !important;
+    border-bottom-left-radius:0;
+    border-top-left-radius:0;
+}
+.fracaso{
+    background-color: #dc3545 !important;
+    width: 20% !important;
+    border-bottom-left-radius:0;
+    border-top-left-radius:0;
+}
 </style>
 
 <?= $menu; ?>
@@ -122,11 +136,14 @@ $post_at_to_date = "";
     <div class="status">
         <div class="input-group labelsAppend">
             <div class="input-group-prepend">
-                <span class="input-group-text">Vuelto</span>
+                <span class="input-group-text">Estado del servidor de Afip</span>
             </div>
-            <input class="form-control inputLabel vuelto" id="vuelto" readonly >
+            <input class="form-control inputLabel status" id="status" readonly >
         </div>
 
+    </div>
+    <div>
+        <input type="button" name="enviarAfip" value="enviarAfip" onclick="afip()">
     </div>
 </div>
 
@@ -154,7 +171,6 @@ document.getElementById("post_at_to_date").value = getSavedValue("post_at_to_dat
 // console.log(localStorage.getSavedValue("post_at"))
     //Save the value function - save it to localStorage as (ID, VALUE)
 function saveValue(e){
-    console.log(e);
    
     var id = e.id;  // get the sender's id to save it . 
     var val = e.value; // get the value. 
@@ -168,11 +184,31 @@ function getSavedValue(v){
     }
     return localStorage.getItem(v);
 }
+function afip() {
+    var val = []
+    $(':checkbox:checked').each(function(i){
+          val[i] = $(this).val();
+    });
+   var resultado = JSON.stringify(val)
+   $.ajax({
+            async: false,
+            method: "POST",
+            data: {resultado},
+            url: "<?php echo base_url()?>"+'/AfipFacturacion/generarFacturaAfip',
+        }).done(function (prod) 
+        {
+
+            var prodJson = JSON.parse(prod)
+ 
+            
+        })
+
+}
 $(function() {
+
     function myfunc(){
         var fD = $('#post_at').value();
         var fH = $('#post_at_to_date').value();
-        console.log(fD);
         $.ajax({
             async: false,
             method: "POST",
@@ -182,18 +218,24 @@ $(function() {
         {
 
             var prodJson = JSON.parse(prod)
-            console.log(prodJson);
  
             
         })
     }
+
+if (<?php echo  $data['serverStatus']?>==true) {
+    $("#status").val("OK");
+    $("#status").addClass("exito");
+} else {
+    $("#status").val("Error");
+    $("#status").addClass("fracaso");
+}
 document.getElementById("post_at").value = getSavedValue("post_at");    // set the value to this input
 document.getElementById("post_at_to_date").value = getSavedValue("post_at_to_date");   // set the value to this input
     /* Here you can add more inputs to set value. if it's saved */
 // console.log(localStorage.getSavedValue("post_at"))
     //Save the value function - save it to localStorage as (ID, VALUE)
 function saveValue(e){
-    console.log(e);
    
     var id = e.id;  // get the sender's id to save it . 
     var val = e.value; // get the value. 

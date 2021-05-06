@@ -92,6 +92,15 @@ table{
 
     <!-- <input class="bcode" name="barcode"  autofocus onchange="myfunc(this)" ></input> -->
 </div>
+<?php foreach($data['errors'] as $error) { ?>
+        <div  class="errors_validation click">   
+            <?php echo $error;?>
+        </div>
+<?php } ?>
+
+	<div class="click" style='height: 10px;'></div>
+    <div  style="padding: 10px">
+
 
 <?php
 

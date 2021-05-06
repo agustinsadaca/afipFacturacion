@@ -23,7 +23,6 @@ class AfipFacturacion extends AdminLayout
             'id','fecha_creacion','total','nro_cae','id_cliente','id_tipo_comprobante'
         ];
 
-
         //// SETS GENERALES
         $crud->setTheme('datatableCheckBox');
         $crud->setTable('factura_afip');
@@ -87,7 +86,7 @@ class AfipFacturacion extends AdminLayout
             }
             
         }
-        $statusAfipServer = json_encode($this->getStatusSerber());
+        $statusAfipServer = json_encode($this->getStatusServer());
         // $this->generarFacturaAfip();
  
         $data = array();
@@ -97,7 +96,7 @@ class AfipFacturacion extends AdminLayout
         return $this->render($data);
     }
 
-    public function getStatusSerber()
+    public function getStatusServer()
     {   
         try {
             $afip = new Afip(array('CUIT' => 23213764519,'production'=>False));
@@ -116,6 +115,14 @@ class AfipFacturacion extends AdminLayout
     }
     public function generarFacturaAfip()
     {
+        var_dump(json_decode($_POST['resultado']));
+        $idFacturasAfip = json_decode($_POST['resultado'];
+        if($idFacturasAfip[0]=="on"){
+            unset($idFacturasAfip[0]);
+        }
+        
+        $buscarF = new ProductoModel();
+        $resultados =  $productoModel->buscarListaProductos();
         $data = array(
             'CantReg' 		=> 1, // Cantidad de comprobantes a registrar
             'PtoVta' 		=> 1, // Punto de venta
@@ -141,7 +148,7 @@ class AfipFacturacion extends AdminLayout
             //     array(
             //         'Tipo' 		=> 8, // Tipo de comprobante (ver tipos disponibles) 
             //         'PtoVta' 	=> 1, // Punto de venta
-            //         'Nro' 		=> 11, // Numero de comprobante
+            //         'Nro' 		=> 13, // Numero de comprobante
             //         // 'Cuit' 		=> 20111111112 // (Opcional) Cuit del emisor del comprobante
             //         )
             //     ),
@@ -177,13 +184,26 @@ class AfipFacturacion extends AdminLayout
         );
         // phpinfo();die;
         $afip = new Afip(array('CUIT' => 23213764519,'production'=>False));
-        
+
         $neto = round(10 / 1.21, 2);
         $iva =  round($neto * 0.21, 2);
         // var_dump($iva);die;
-        $server_status = $afip->ElectronicBilling->GetServerStatus();
+        // $server_status = $afip->ElectronicBilling->GetVoucherTypes();
+        // echo '<pre>';
         // var_dump($server_status);die;
         
+        // $voucher_info = $afip->ElectronicBilling->GetVoucherInfo(13,1,6); //Devuelve la información del comprobante 1 para el punto de venta 1 y el tipo de comprobante 6 (Factura B)
+        $voucher_info = $afip->ElectronicBilling->GetLastVoucher(1,8); //Devuelve la información del comprobante 1 para el punto de venta 1 y el tipo de comprobante 6 (Factura B)
+
+        if($voucher_info === NULL){
+            echo 'El comprobante no existe';
+        }
+        else{
+            echo 'Esta es la información del comprobante:';
+            echo '<pre>';
+            print_r($voucher_info);die;
+            echo '</pre>';
+        }
       
         $res = $afip->ElectronicBilling->CreateNextVoucher($data);
         $res['CAE']; //CAE asignado el comprobante

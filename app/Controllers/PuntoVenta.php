@@ -33,7 +33,7 @@ class PuntoVenta extends AdminLayout
         $crud->fieldType('total', 'readonly');
         $crud->fieldType('id', 'readonly');
         $crud->unsetAddFields(['id','total']);
-        $crud->setRelation('id_cliente', 'cliente', 'nombre_completo');
+        $crud->setRelation('id_cliente', 'cliente', '{nombre} {apellido}');
         $crud->defaultOrdering('id', 'asc');
         $crud->unsetBackToDatagrid();
 
