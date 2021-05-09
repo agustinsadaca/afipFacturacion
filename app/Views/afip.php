@@ -194,7 +194,7 @@ function afip() {
             async: false,
             method: "POST",
             data: {resultado},
-            url: "<?php echo base_url()?>"+'/AfipFacturacion/generarFacturaAfip',
+            url: "<?php echo base_url()?>"+'/AfipFacturacion/guardarFacturasSeleccionadasAfip',
         }).done(function (prod) 
         {
 

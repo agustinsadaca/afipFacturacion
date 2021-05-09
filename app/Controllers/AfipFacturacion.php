@@ -3,6 +3,7 @@
 namespace App\Controllers;
 use App\Libraries\GroceryCrud;
 use App\Models\FacturaModel;
+use App\Models\FacturaAfipModel;
 use Afip;
 // include '../..//src/Afip.php'; 
 
@@ -113,16 +114,20 @@ class AfipFacturacion extends AdminLayout
         }
     
     }
-    public function generarFacturaAfip()
+    public function guardarFacturasSeleccionadasAfip()
     {
-        var_dump(json_decode($_POST['resultado']));
-        $idFacturasAfip = json_decode($_POST['resultado'];
+        // var_dump(json_decode($_POST['resultado']));
+        $idFacturasAfip = json_decode($_POST['resultado']);
         if($idFacturasAfip[0]=="on"){
             unset($idFacturasAfip[0]);
         }
+        $buscarFacturas = new FacturaAfipModel();
+        $resultado =  $buscarFacturas->buscarFacturasSeleccionadas($idFacturasAfip);
         
-        $buscarF = new ProductoModel();
-        $resultados =  $productoModel->buscarListaProductos();
+    }
+    public function generarFacturaAfip()
+    {
+       
         $data = array(
             'CantReg' 		=> 1, // Cantidad de comprobantes a registrar
             'PtoVta' 		=> 1, // Punto de venta
@@ -210,7 +215,6 @@ class AfipFacturacion extends AdminLayout
         $res['CAEFchVto']; //Fecha de vencimiento del CAE (yyyy-mm-dd)
         $res['voucher_number'];
         var_dump($res);die;
-        
     }
 
 
