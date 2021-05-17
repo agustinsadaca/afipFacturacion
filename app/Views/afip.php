@@ -107,6 +107,9 @@ endforeach;
     border-bottom-left-radius:0;
     border-top-left-radius:0;
 }
+#ajax_refresh_and_loading{
+    display:none;
+}
 </style>
 
 <?= $menu; ?>
@@ -197,13 +200,10 @@ function afip() {
             url: "<?php echo base_url()?>"+'/AfipFacturacion/guardarFacturasSeleccionadasAfip',
         }).done(function (prod) 
         {
-
             var prodJson = JSON.parse(prod)
- 
-            
         })
-
 }
+
 $(function() {
 
     function myfunc(){

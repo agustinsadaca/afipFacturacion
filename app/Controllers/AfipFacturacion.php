@@ -21,6 +21,9 @@ class AfipFacturacion extends AdminLayout
         $crud = new GroceryCrud();
         
         $arrayColumns = [
+            'id','fecha_creacion','total','nro_cae','id_cliente','id_tipo_comprobante','estado_factura'
+        ];
+        $arrayAddEdit = [
             'id','fecha_creacion','total','nro_cae','id_cliente','id_tipo_comprobante'
         ];
 
@@ -30,17 +33,23 @@ class AfipFacturacion extends AdminLayout
         $crud->displayAs('fecha_creacion','Fecha de creación');
         $crud->displayAs('id_tipo_comprobante','Tipo de Comprobante');
         $crud->displayAs('id','Id');
+        $crud->displayAs('estado_factura','Estado Factura');
         $crud->setSubject('Factura Afip');
         $crud->columns($arrayColumns);
-        $crud->editFields($arrayColumns);
-        $crud->fields($arrayColumns); 
+        $crud->editFields($arrayAddEdit);
+        $crud->addFields($arrayAddEdit);
         $crud->setRelation('id_cliente', 'cliente', '{nombre} {apellido}');
         $crud->setRelation('id_tipo_comprobante', 'tipo_comprobante', 'nombre_tipo');
         // $crud->setRule('total','total','is_natural_no_zero');
         // $crud->unsetAdd(); 
         // $crud->unsetEdit(); 
         // $crud->unsetDelete();
-
+        $crud->callbackColumn('estado_factura', function ($value, $row) {
+        
+            $buscarEstadosFacturas = new FacturaAfipModel();
+            $resultado =  $buscarEstadosFacturas->buscarEstadosFacturas($row);
+            return $resultado ;
+        });
         if ($crud->getState() == 'add') {
             $crud->fieldType('id', 'hidden'); 
             $crud->fieldType('nro_cae', 'hidden'); 
@@ -123,6 +132,7 @@ class AfipFacturacion extends AdminLayout
         }
         $buscarFacturas = new FacturaAfipModel();
         $resultado =  $buscarFacturas->buscarFacturasSeleccionadas($idFacturasAfip);
+        return $resultado;
         
     }
     public function generarFacturaAfip()
