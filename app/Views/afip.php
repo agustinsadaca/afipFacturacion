@@ -88,8 +88,11 @@ endforeach;
 	color: #fff;
 }
 .cabecera{
-    display: flex;
-    justify-content: space-between;
+    display: inline-flex;
+  flex-wrap: wrap;
+}
+.cabecera > div {
+  margin:0 50px;
 }
 .status{
     align-self: center;
@@ -109,6 +112,15 @@ endforeach;
 }
 #ajax_refresh_and_loading{
     display:none;
+}
+[rel="estado_factura"] {
+    pointer-events: none;
+}
+option[value="estado_factura"]{
+    display:none;
+}
+#enviarAfip{
+    margin:auto;
 }
 </style>
 
@@ -136,6 +148,9 @@ $post_at_to_date = "";
         </p>
     </form>
     </div>
+    <div id="enviarAfip">
+        <input type="button" class="btn btn-primary btn-sm bfecha" name="enviarAfip" value="enviarAfip" onclick="afip()">
+    </div>
     <div class="status">
         <div class="input-group labelsAppend">
             <div class="input-group-prepend">
@@ -144,9 +159,6 @@ $post_at_to_date = "";
             <input class="form-control inputLabel status" id="status" readonly >
         </div>
 
-    </div>
-    <div>
-        <input type="button" name="enviarAfip" value="enviarAfip" onclick="afip()">
     </div>
 </div>
 
@@ -209,6 +221,7 @@ $(function() {
     function myfunc(){
         var fD = $('#post_at').value();
         var fH = $('#post_at_to_date').value();
+       
         $.ajax({
             async: false,
             method: "POST",

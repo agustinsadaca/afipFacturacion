@@ -44,6 +44,7 @@ class AfipFacturacion extends AdminLayout
         // $crud->unsetAdd(); 
         // $crud->unsetEdit(); 
         // $crud->unsetDelete();
+        
         $crud->callbackColumn('estado_factura', function ($value, $row) {
         
             $buscarEstadosFacturas = new FacturaAfipModel();
@@ -57,48 +58,31 @@ class AfipFacturacion extends AdminLayout
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" ) {
            try {
-                $fD = $_POST['fechaDesde'];
-                $fH = $_POST['fechaHasta'];
-           } catch (\Throwable $th) {    
+                session()->set('fechaDesde',$_POST['fechaDesde']);
+                session()->set('fechaHasta',$_POST['fechaHasta']);
+            } catch (\Throwable $th) {    
            }
-            if(empty($fd)){}
         }
-        if($fD!="" || $fH!="" ){
-         
-            try {
-            $fechaDesde = explode('/',$fD);
-            $fechaDesde = $fechaDesde[2].$fechaDesde[0].$fechaDesde[1];
-     
-            } catch (\Throwable $th) {   
-            }
-            try{
-            $fechaHasta = explode('/',$fH);
-            $fechaHasta = $fechaHasta[2].$fechaHasta[0].$fechaHasta[1];
-            }
-            catch (\Throwable $th) {
-            }
+        $fD = session()->get('fechaDesde');
+        $fH = session()->get('fechaHasta') ;
 
-            if( $fechaDesde!="" && is_array($fechaHasta) ){
-                $crud->where(
-                    "factura_afip.fecha_creacion>=$fechaDesde"
-                );
-            }elseif( $fechaHasta!="" && is_array($fechaDesde)){
-                $crud->where(
-                    "factura_afip.fecha_creacion<=$fechaHasta"
-                );
-            }elseif(!is_array($fechaHasta) && !is_array($fechaDesde)){
-                $crud->where(
-                    "factura_afip.fecha_creacion<=$fechaHasta"
-                );   
-                $crud->where(
-                    "factura_afip.fecha_creacion>=$fechaDesde"
-                );
-            }
-            
+        $fechaDesde = $this->convertirFecha($fD);
+        $fechaHasta = $this->convertirFecha($fH);
+  
+        if($fechaHasta!=""){
+        $crud->where(
+            "factura_afip.fecha_creacion<=$fechaHasta"
+        );   
         }
+        if($fechaDesde!=""){
+        $crud->where(
+            "factura_afip.fecha_creacion>=$fechaDesde"
+        );
+        }
+        
         $statusAfipServer = json_encode($this->getStatusServer());
         // $this->generarFacturaAfip();
- 
+       
         $data = array();
         $data['serverStatus'] = $statusAfipServer;
         $data['view'] = 'afip.php';
@@ -106,6 +90,16 @@ class AfipFacturacion extends AdminLayout
         return $this->render($data);
     }
 
+    public function convertirFecha($fecha)
+    {
+        try {
+            $fechaResult = explode('/',$fecha);
+            $fechaResult = $fechaResult[2].$fechaResult[0].$fechaResult[1];
+        } catch (\Throwable $th) {
+            return $fechaResult="";
+        }
+        return $fechaResult;
+    }
     public function getStatusServer()
     {   
         try {
@@ -135,9 +129,14 @@ class AfipFacturacion extends AdminLayout
         return $resultado;
         
     }
+    public function buscarFacturasAfipEnviar()
+    {
+        $buscarFacturas = new FacturaAfipModel();
+        $resultado =  $buscarFacturas->buscarFacturasAfipEnviar($idFacturasAfip);
+    }
     public function generarFacturaAfip()
     {
-       
+        
         $data = array(
             'CantReg' 		=> 1, // Cantidad de comprobantes a registrar
             'PtoVta' 		=> 1, // Punto de venta

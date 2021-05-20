@@ -45,18 +45,28 @@ class FacturaAfipModel extends Model
     }
 		public function buscarEstadosFacturas($row)
 		{
-			$idFactura = $row->id;
+			$db = \Config\Database::connect();
+			$idFactura = intval($row->id);
+
 			try {
 				$buscarFactura = $db->query("SELECT factura_estado.nombre_estado 
 				FROM  factura_estado_fecha 
 				INNER JOIN factura_estado ON factura_estado_fecha.id_factura_estado=factura_estado.id
-				WHERE factura_estado.id_factura=$idFactura AND fecha_hasta is NULL ");
-				$resultado = $buscarFactura->getResultObject()[0];
-				var_dump($resultado);die;
+				WHERE factura_estado_fecha.id_factura=$idFactura AND fecha_hasta is NULL ");
+				$resultado = $buscarFactura->getResultObject()[0]->nombre_estado;
+			
 			} catch (\Throwable $th) {
+				
 				return '';
+
 			}
+	
 			return $resultado;
+		}
+		public function buscarFacturasAfipEnviar()
+		{
+			$db = \Config\Database::connect();
+			$buscarFacturas = $db->query("SELECT *")
 		}
 
     

@@ -2,7 +2,7 @@
 <script type="text/javascript">
 
 $(document).ready(function () {
-	//CHECK ALL BOXES
+	//CHECK ALL BOXEs
 	document.getElementById("ajax_refresh_and_loading").addEventListener("click", function(event){
 		event.preventDefault()
 	});
@@ -21,7 +21,7 @@ $(document).ready(function () {
 	// debugger;
 	//ADD DELETE BUTTON
 	if($('.pDiv2 .delete_all_button').length == 0) { //check if element already exists (for ajax refresh purposes)
-		$('.pDiv2').append('<input type="button" value="Enviar facturas a Afip" class="delete_all_button btn  btn-primary btn-sm" onclick="delete_selected();">');
+		// $('.pDiv2').append('<input type="button" value="Enviar facturas a Afip" class="delete_all_button btn  btn-primary btn-sm" onclick="delete_selected();">');
 	}
 });
 
