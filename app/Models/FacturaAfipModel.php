@@ -66,7 +66,13 @@ class FacturaAfipModel extends Model
 		public function buscarFacturasAfipEnviar()
 		{
 			$db = \Config\Database::connect();
-			$buscarFacturas = $db->query("SELECT *")
+			$buscarFacturas = $db->query("SELECT * FROM factura_afip 
+			INNER JOIN factura_estado_fecha on factura_afip.id=factura_estado_fecha.id_factura 
+			INNER JOIN cliente on  factura_afip.id_cliente=cliente.id
+			WHERE factura_estado_fecha.id_factura_estado=1");
+			$buscarFacturas = $buscarFacturas->getResultObject();
+			return $buscarFacturas;
+			
 		}
 
     

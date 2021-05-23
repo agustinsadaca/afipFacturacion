@@ -68,6 +68,8 @@ class AfipFacturacion extends AdminLayout
 
         $fechaDesde = $this->convertirFecha($fD);
         $fechaHasta = $this->convertirFecha($fH);
+
+        $this->buscarFacturasAfipEnviar();
   
         if($fechaHasta!=""){
         $crud->where(
@@ -129,12 +131,75 @@ class AfipFacturacion extends AdminLayout
         return $resultado;
         
     }
+
     public function buscarFacturasAfipEnviar()
     {
         $buscarFacturas = new FacturaAfipModel();
-        $resultado =  $buscarFacturas->buscarFacturasAfipEnviar($idFacturasAfip);
+        $resultado =  $buscarFacturas->buscarFacturasAfipEnviar();
+        $this->generarFacturaAfip($resultado);
+        return;
     }
-    public function generarFacturaAfip()
+    public function generarFacturaAfip($facturasEnviar)
+    {
+        foreach($facturasEnviar as $factura)
+        {
+        print_r('<pre>');
+        var_dump($factura);die;
+        
+        $data = array(
+            'CantReg' 		=> 1, // Cantidad de comprobantes a registrar
+            'PtoVta' 		=> 1, // Punto de venta
+            'CbteTipo' 		=> 6, // Tipo de comprobante (ver tipos disponibles) 
+            'Concepto' 		=> 1, // Concepto del Comprobante: (1)Productos, (2)Servicios, (3)Productos y Servicios
+            'DocTipo' 		=> 99, // Tipo de documento del comprador (ver tipos disponibles)
+            'DocNro' 		=> 0, // Numero de documento del comprador
+            'CbteDesde' 	=> 1, // Numero de comprobante o numero del primer comprobante en caso de ser mas de uno
+            'CbteHasta' 	=> 1, // Numero de comprobante o numero del ultimo comprobante en caso de ser mas de uno
+            'CbteFch'  		=> intval(date('Ymd')), // (Opcional) Fecha del comprobante (yyyymmdd) o fecha actual si es nulo
+            'ImpTotal' 		=> intval($factura->total), // Importe total del comprobante
+            'ImpTotConc' 	=> 0, // Importe neto no gravado
+            'ImpNeto' 		=> 8.26, // Importe neto gravado
+            'ImpOpEx' 		=> 0, // Importe exento de IVA
+            'ImpIVA' 		=> 1.73, //Importe total de IVA
+            'ImpTrib' 		=> 0, //Importe total de tributos
+            'FchServDesde' 	=> NULL, // (Opcional) Fecha de inicio del servicio (yyyymmdd), obligatorio para Concepto 2 y 3
+            'FchServHasta' 	=> NULL, // (Opcional) Fecha de fin del servicio (yyyymmdd), obligatorio para Concepto 2 y 3
+            'FchVtoPago' 	=> NULL, // (Opcional) Fecha de vencimiento del servicio (yyyymmdd), obligatorio para Concepto 2 y 3
+            'MonId' 		=> 'PES', //Tipo de moneda usada en el comprobante (ver tipos disponibles)('PES' para pesos argentinos) 
+            'MonCotiz' 		=> 1, // Cotización de la moneda usada (1 para pesos argentinos)  
+            // 'CbtesAsoc' 	=> array( // (Opcional) Comprobantes asociados
+            //     array(
+            //         'Tipo' 		=> 8, // Tipo de comprobante (ver tipos disponibles) 
+            //         'PtoVta' 	=> 1, // Punto de venta
+            //         'Nro' 		=> 13, // Numero de comprobante
+            //         // 'Cuit' 		=> 20111111112 // (Opcional) Cuit del emisor del comprobante
+            //         )
+            //     ),
+           
+            'Iva' 			=> array( // (Opcional) Alícuotas asociadas al comprobante
+                array(
+                    'Id' 		=> 5, // Id del tipo de IVA (ver tipos disponibles) 
+                    'BaseImp' 	=> 8.26, // Base imponible
+                    'Importe' 	=> 1.73 // Importe 
+                )
+          
+        ));
+        $neto = round((intval($factura->total))/ 1.21, 2);
+        $iva =  round($neto * 0.21, 2);
+        array_push($data);
+
+        $afip = new Afip(array('CUIT' => 23213764519,'production'=>False));
+        $neto = round(10 / 1.21, 2);
+        $iva =  round($neto * 0.21, 2);
+      
+        $res = $afip->ElectronicBilling->CreateNextVoucher($data);
+        $res['CAE']; //CAE asignado el comprobante
+        $res['CAEFchVto']; //Fecha de vencimiento del CAE (yyyy-mm-dd)
+        $res['voucher_number'];
+        var_dump($res);die;
+        }
+    }
+    public function generarFacturaAfip123123213()
     {
         
         $data = array(
@@ -198,7 +263,6 @@ class AfipFacturacion extends AdminLayout
         );
         // phpinfo();die;
         $afip = new Afip(array('CUIT' => 23213764519,'production'=>False));
-
         $neto = round(10 / 1.21, 2);
         $iva =  round($neto * 0.21, 2);
         // var_dump($iva);die;
