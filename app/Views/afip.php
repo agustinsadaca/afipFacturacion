@@ -122,6 +122,9 @@ option[value="estado_factura"]{
 #enviarAfip{
     margin:auto;
 }
+.statusFactura{
+    pointer-events: none;
+}
 </style>
 
 <?= $menu; ?>
@@ -212,7 +215,7 @@ function afip() {
             url: "<?php echo base_url()?>"+'/AfipFacturacion/guardarFacturasSeleccionadasAfip',
         }).done(function (prod) 
         {
-            var prodJson = JSON.parse(prod)
+           
         })
 }
 
@@ -265,6 +268,23 @@ function getSavedValue(v){
 
 $("#post_at").datepicker();
 $("#post_at_to_date").datepicker();
+
+$('.statusFactura').each(function(i){
+    val = $(this).text();
+    switch (val) {
+        case 'creada con exito':
+            $(this).addClass("btn btn-success")
+            break;
+        case 'procesando':
+            $(this).addClass("btn btn-warning") 
+            break;
+        case 'error':
+            $(this).addClass("btn btn-danger")    
+            break;
+        default:   
+    }
+});
+
 });
 </script>
 

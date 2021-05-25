@@ -66,13 +66,43 @@ class FacturaAfipModel extends Model
 		public function buscarFacturasAfipEnviar()
 		{
 			$db = \Config\Database::connect();
-			$buscarFacturas = $db->query("SELECT * FROM factura_afip 
-			INNER JOIN factura_estado_fecha on factura_afip.id=factura_estado_fecha.id_factura 
-			INNER JOIN cliente on  factura_afip.id_cliente=cliente.id
+			$buscarFacturas = $db->query("SELECT *,factura_estado_fecha.id FROM factura_estado_fecha 
+			INNER JOIN factura_afip on factura_afip.id=factura_estado_fecha.id_factura 
+			LEFT JOIN cliente on  factura_afip.id_cliente=cliente.id
 			WHERE factura_estado_fecha.id_factura_estado=1");
 			$buscarFacturas = $buscarFacturas->getResultObject();
+	
 			return $buscarFacturas;
 			
+		}
+		public function asignarCaeFacturaAfip($resCae,$factura)
+		{
+			// var_dump($resCae);
+			// var_dump($factura);die;
+			try {
+				$db = \Config\Database::connect();
+				if($resCae["CAE"] != "")
+				{
+					$cae = $resCae["CAE"];
+					$cambiarEstadoExito = $db->query("UPDATE `factura_estado_fecha` 
+					SET `fecha_desde`=CURDATE(),`id_factura_estado`=5 
+					WHERE id= $factura->id
+					");
+					$agregarCae = $db->query("UPDATE `factura_afip` 
+					SET `nro_cae`= $cae WHERE id = $factura->id_factura
+					");
+					return;
+
+				}
+			} catch (\Throwable $th) {
+				$cambiarEstadoError = $db->query("UPDATE `factura_estado_fecha` 
+				SET `fecha_desde`=CURDATE(),`id_factura_estado`=2 
+				WHERE id= $factura->id
+				");
+				return;
+				
+			}
+
 		}
 
     
