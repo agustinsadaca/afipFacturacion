@@ -56,6 +56,10 @@ class AfipFacturacion extends AdminLayout
             $crud->fieldType('id', 'hidden'); 
             $crud->fieldType('nro_cae', 'hidden'); 
         }
+        if ($crud->getState() == 'edit') 
+        {
+            $crud->fieldType('id', 'readonly'); 
+        }
 
         if ($_SERVER["REQUEST_METHOD"] == "POST" ) {
            try {
@@ -70,7 +74,7 @@ class AfipFacturacion extends AdminLayout
         $fechaDesde = $this->convertirFecha($fD);
         $fechaHasta = $this->convertirFecha($fH);
 
-        // $this->buscarFacturasAfipEnviar();
+        $this->buscarFacturasAfipEnviar();
   
         if($fechaHasta!=""){
         $crud->where(
@@ -172,14 +176,14 @@ class AfipFacturacion extends AdminLayout
             'FchVtoPago' 	=> NULL, // (Opcional) Fecha de vencimiento del servicio (yyyymmdd), obligatorio para Concepto 2 y 3
             'MonId' 		=> 'PES', //Tipo de moneda usada en el comprobante (ver tipos disponibles)('PES' para pesos argentinos) 
             'MonCotiz' 		=> 1, // Cotización de la moneda usada (1 para pesos argentinos)  
-            // 'CbtesAsoc' 	=> array( // (Opcional) Comprobantes asociados
-            //     array(
-            //         'Tipo' 		=> 8, // Tipo de comprobante (ver tipos disponibles) 
-            //         'PtoVta' 	=> 1, // Punto de venta
-            //         'Nro' 		=> 13, // Numero de comprobante
-            //         // 'Cuit' 		=> 20111111112 // (Opcional) Cuit del emisor del comprobante
-            //         )
-            //     ),
+            'CbtesAsoc' 	=> array( // (Opcional) Comprobantes asociados
+                array(
+                    'Tipo' 		=> 8, // Tipo de comprobante (ver tipos disponibles) 
+                    'PtoVta' 	=> 1, // Punto de venta
+                    'Nro' 		=> 44, // Numero de comprobante
+                    // 'Cuit' 		=> 20111111112 // (Opcional) Cuit del emisor del comprobante
+                    )
+                ),
        
         );
         
@@ -195,17 +199,38 @@ class AfipFacturacion extends AdminLayout
             $data['DocTipo'] = 80;
             $data['DocNro'] = intval($factura->cuit);
         }
-    
+
+       
+        // switch (intval($factura->id_tipo_comprobante)) {
+        //     case 2:
+                
+        //         break;
+        //     case 1:
+        //         echo "i es igual a 1";
+        //         break;
+        //     case 2:
+        //         echo "i es igual a 2";
+        //         break;
+        // }
 
         try {
             $afip = new Afip(array('CUIT' => 23213764519,'production'=>False));
             $res = $afip->ElectronicBilling->CreateNextVoucher($data);
+          
+
+            $last = $afip->ElectronicBilling->GetLastVoucher(1,8); //Devuelve la información del comprobante 1 para el punto de venta 1 y el tipo de comprobante 6 (Factura B)
+            $voucher_info = $afip->ElectronicBilling->GetVoucherInfo($last,1,8); //Devuelve la información del comprobante 1 para el punto de venta 1 y el tipo de comprobante 6 (Factura B)
+            echo '<pre>'    ;
+            var_dump($voucher_info);die;
             $asignarCae = new FacturaAfipModel();
             $resultado =  $asignarCae->asignarCaeFacturaAfip($res,$factura);
 
-            
+           
         } catch (\Throwable $th) {
             $asignarCae = new FacturaAfipModel();
+            $res ="";
+            echo '<pre>'    ;
+            var_dump($th);die;
             $resultado =  $asignarCae->asignarCaeFacturaAfip($res,$factura);  
         }    
         }
