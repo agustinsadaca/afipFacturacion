@@ -269,21 +269,6 @@ function getSavedValue(v){
 $("#post_at").datepicker();
 $("#post_at_to_date").datepicker();
 
-$('.statusFactura').each(function(i){
-    val = $(this).text();
-    switch (val) {
-        case 'creada con exito':
-            $(this).addClass("btn btn-success")
-            break;
-        case 'procesando':
-            $(this).addClass("btn btn-warning") 
-            break;
-        case 'error':
-            $(this).addClass("btn btn-danger")    
-            break;
-        default:   
-    }
-});
 
 });
 </script>

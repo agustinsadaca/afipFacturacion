@@ -77,19 +77,19 @@ class FacturaAfipModel extends Model
 		}
 		public function asignarCaeFacturaAfip($resCae,$factura)
 		{
-			// var_dump($resCae);
 			// var_dump($factura);die;
 			try {
 				$db = \Config\Database::connect();
 				if($resCae["CAE"] != "")
 				{
 					$cae = $resCae["CAE"];
+					$voucherNumber = $resCae["voucher_number"];
 					$cambiarEstadoExito = $db->query("UPDATE `factura_estado_fecha` 
 					SET `fecha_desde`=CURDATE(),`id_factura_estado`=5 
 					WHERE id= $factura->id
 					");
 					$agregarCae = $db->query("UPDATE `factura_afip` 
-					SET `nro_cae`= $cae WHERE id = $factura->id_factura
+					SET `nro_cae`= $cae, `nro_comprobante`= $voucherNumber WHERE id = $factura->id_factura
 					");
 					return;
 
