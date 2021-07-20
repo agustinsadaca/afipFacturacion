@@ -144,7 +144,6 @@ input.field_error
 .datatables div.form-div input[type=text], .datatables div.form-div input[type=password]
 {
 	font-size: 15px;
-	width: 500px;	
 	height:20px;
 	border: 1px solid #AAA;
 	padding: 5px 5px 5px 5px;

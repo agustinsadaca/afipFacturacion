@@ -1,6 +1,6 @@
 
-<script type="text/javascript">
 
+<script type="text/javascript">
 $(document).ready(function () {
 	//CHECK ALL BOXEs
 	document.getElementById("ajax_refresh_and_loading").addEventListener("click", function(event){

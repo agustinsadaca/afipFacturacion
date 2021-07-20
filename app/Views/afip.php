@@ -40,23 +40,23 @@ endforeach;
 .table-content td {padding:5px 20px; border-bottom: #F0F0F0 1px solid;vertical-align:top;} 
 .fechaSearch{margin-left:10px;align-self: center;
 }
-.input-control{border-radius:4px;padding:4px;border-width: 2px;
+.input-control{border-radius:4px;padding:9px;border: 1px solid #ccc;
    
 }
 .delete_all_button{top:0px!important;}
 .navbar{display: block !important; padding: 0 !important;margin: 0 !important;}
-.bfecha{margin-bottom:4px;margin-left:10px}
+.bfecha{margin-left:30px}
 .flexigrid table tr.hDiv th, .flexigrid div.bDiv td {text-align: center!important;vertical-align:middle !important; }
 .print{display: none !important}
 .btn-sm {
-    padding: .25rem .5rem;
+    padding: .35rem .5rem;
     font-size: .875rem;
     line-height: 1.5;
     border-radius: .2rem;}
 .btn-primary {
     color: #fff;
     background-color: #007bff;
-    border-color: #007bff;
+    border: 1px solid #007bff;
     box-shadow: none;}
 .btn-primary:hover {
     color: #fff;
@@ -89,26 +89,30 @@ endforeach;
 }
 .cabecera{
     display: inline-flex;
-  flex-wrap: wrap;
+    flex-wrap: wrap;
 }
 .cabecera > div {
-  margin:0 50px;
+}
+.input-group-text{
+    font-size: 0.9rem;
 }
 .status{
     align-self: center;
 }
-.labelsAppend{display: flex;}
+.labelsAppend{display: flex;padding:0px 2rem;}
 .exito{
     background-color: #28a745 !important;
     width: 20% !important;
     border-bottom-left-radius:0;
     border-top-left-radius:0;
+    border-color: #28a745;
 }
 .fracaso{
     background-color: #dc3545 !important;
     width: 20% !important;
     border-bottom-left-radius:0;
     border-top-left-radius:0;
+    border-color: #dc3545;
 }
 #ajax_refresh_and_loading{
     display:none;
@@ -121,10 +125,13 @@ option[value="estado_factura"]{
 }
 #enviarAfip{
     margin:auto;
+    margin-left:6rem;
 }
 .statusFactura{
     pointer-events: none;
 }
+.erow > td{background-color:#e0e0e0 !important;overflow:auto!important;}
+
 </style>
 
 <?= $menu; ?>
@@ -143,13 +150,13 @@ $post_at_to_date = "";
 ?>
 <div class="cabecera">
     <div class="fechaSearch">
-    <form name="frmSearch" method="post" action="#" onsubmit="return myfunc(this);">
-        <p class="search_input">
-        <input type="text" placeholder="Fecha Desde" id="post_at" name="fechaDesde"  value="<?php echo $post_at; ?>" class="input-control" onchange='saveValue(this);' />
-        <input type="text" placeholder="Fecha Hasta" id="post_at_to_date" name="fechaHasta" style="margin-left:10px"  value="<?php echo $post_at_to_date; ?>" class="input-control"  onchange='saveValue(this);'/>			 
-        <input type="submit" id="goSubmit" name="go" value="Buscar por fecha" class="btn btn-primary btn-sm bfecha" >
-        </p>
-    </form>
+        <form name="frmSearch" method="post" action="#" onsubmit="return myfunc(this);">
+            <p class="search_input">
+            <input type="text" placeholder="Fecha Desde" id="post_at" name="fechaDesde"  value="<?php echo $post_at; ?>" class="input-control" onchange='saveValue(this);' />
+            <input type="text" placeholder="Fecha Hasta" id="post_at_to_date" name="fechaHasta" style="margin-left:10px"  value="<?php echo $post_at_to_date; ?>" class="input-control"  onchange='saveValue(this);'/>			 
+            <input type="submit" id="goSubmit" name="go" value="Buscar por fecha" class="btn btn-primary btn-sm bfecha" >
+            </p>
+        </form>
     </div>
     <div id="enviarAfip">
         <input type="button" class="btn btn-primary btn-sm bfecha" name="enviarAfip" value="enviarAfip" onclick="afip()">
@@ -158,8 +165,8 @@ $post_at_to_date = "";
         <div class="input-group labelsAppend">
             <div class="input-group-prepend">
                 <span class="input-group-text">Estado del servidor de Afip</span>
+                <input class="form-control inputLabel status" id="status" readonly >
             </div>
-            <input class="form-control inputLabel status" id="status" readonly >
         </div>
 
     </div>
