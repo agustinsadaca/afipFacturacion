@@ -101,3 +101,8 @@
 <script src="<?php echo(base_url().'/AdminLTE-3.1.0-rc/pages/examples/../../dist/js/adminlte.min.js')?>"></script>
 </body>
 </html>
+<style>
+.card{
+  box-shadow: 0 0 10px rgb(0 0 0 / 13%), 0 1px 3px rgb(0 0 0 / 20%) !important;
+}
+</style>

@@ -27,10 +27,10 @@ class Login extends AdminLayout
 	{
 		session()->destroy();
 
-            $data = array();
-            $data['view'] = 'login.php';
-            
-            return $this->render($data);
+		$data = array();
+		$data['view'] = 'login.php';
+		
+		return $this->render($data);
 	}
     
 	

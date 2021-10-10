@@ -14,7 +14,12 @@ class Productos extends AdminLayout
     
         $crud = new GroceryCrud();
     
-       
+    /* -------------------------------------------------------------------------- */
+    /*            Seteo tabla de base de datos con respectivas columnas           */
+    /* -------------------------------------------------------------------------- */
+    /* -------------------------------------------------------------------------- */
+    /*                y acciones de CRUD dela libreria GroceryCrud                */
+    /* -------------------------------------------------------------------------- */
         
         $arrayColumns = [
             'id_Producto','nombre','cod_barras','fechaVencimiento','Cantidad','precio'
@@ -29,7 +34,9 @@ class Productos extends AdminLayout
         $crud->editFields([ 'id_Producto','nombre','cod_barras','precio']);
         $crud->addFields($arrayColumns);
       
-        // $crud->fields($arrayColumns);
+        /* -------------------------------------------------------------------------- */
+        /*                         Tipo de datos de los campos                        */
+        /* -------------------------------------------------------------------------- */
         $crud->fieldType( 'id_Producto', 'readonly');
         $crud->displayAs('idListaPrecios','Precio');
         $crud->fieldType('fechaCompra','datetime');
@@ -39,15 +46,22 @@ class Productos extends AdminLayout
         $crud->unsetColumns(['fechaCompra','fechaVencimiento']);
         $crud->requiredFields(['nombre','cod_barras','fechaVencimiento','Cantidad']);
         $crud->unsetEditFields(['id_Producto','nombre','cod_barras','precio']);
+        $crud->setRule('nombre','Nombre','is_unique[producto.nombre]');
+        $crud->setRule('cod_barras','Cod barras','is_unique[producto.cod_barras]');
+        $crud->setRule('Cantidad','Cantidad','greater_than[-1]');
+        $crud->setRule('precio','Precio','greater_than[0]'); 
 
-        if ($crud->getState() == 'add') {
+        /* -------------------------------------------------------------------------- */
+        /*                 Labels de la pantalla de alta de productos                 */
+        /* -------------------------------------------------------------------------- */
+        $state = $crud->getState();
+        if ($state == "add") 
+        {
             $crud->fieldType('id_Producto', 'hidden');
-            $crud->setRule('cod_barras','Cod barras','is_unique[producto.cod_barras]');
-            $crud->setRule('nombre','Nombre','is_unique[producto.nombre]');
-            $crud->setRule('Cantidad','Cantidad','is_natural');
-            $crud->setRule('precio','Precio','is_natural'); 
         };
-
+        /* -------------------------------------------------------------------------- */
+        /*                                  Acciones                                  */
+        /* -------------------------------------------------------------------------- */
         $crud->setActionButton('Admin lotes de producto', 'el el-user', function ($primaryKey) { 
             return site_url('/Lote/lotes/' . $primaryKey); 
         }, true);
@@ -118,12 +132,18 @@ class Productos extends AdminLayout
         return false;
 
     }
+    /* -------------------------------------------------------------------------- */
+    /*                         API traer productos por id                         */
+    /* -------------------------------------------------------------------------- */
 
     function getProducto($id){
         $producto = new ProductoModel();
         $resultado =  $producto->buscarProducto($id);
          echo json_encode($resultado);
     }
+    /* -------------------------------------------------------------------------- */
+    /*                         API traer productos por nombre                     */
+    /* -------------------------------------------------------------------------- */
     function getProductoXNomb($nomb){
         $producto = new ProductoModel();
         $resultado =  $producto->buscarPrecioXNomb($nomb);

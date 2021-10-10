@@ -4,6 +4,9 @@ use CodeIgniter\Model;
 
 class ProductoModel extends Model
 {
+    /* -------------------------------------------------------------------------- */
+    /*                  Parametros para conexión a base de datos                  */
+    /* -------------------------------------------------------------------------- */
     protected $table      = 'producto';
     protected $primaryKey = 'id';
 
@@ -18,13 +21,18 @@ class ProductoModel extends Model
     protected $skipValidation     = false;
 
 
-    
+    /* -------------------------------------------------------------------------- */   
+    /*                     conexion a base de datos y consultas                   */
+    /* -------------------------------------------------------------------------- */    
 
     public function traerPrecioProd($value,$row){
         $idProd = $row->id_Producto;
 
         $db = \Config\Database::connect();
-        $query1 = $db->query("SELECT precio FROM producto INNER JOIN lista_de_precios ON producto.id_Producto=lista_de_precios.id_Producto WHERE producto.id_Producto='$idProd' AND (lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW())");
+        $query1 = $db->query("SELECT precio FROM producto INNER JOIN lista_de_precios
+         ON producto.id_Producto=lista_de_precios.id_Producto WHERE 
+         producto.id_Producto='$idProd' AND (lista_de_precios.fechaHasta 
+         IS NULL OR lista_de_precios.fechaHasta>NOW())");
         $precioProd = $query1->getResultObject()[0]->precio;
 
         return $precioProd;
@@ -37,7 +45,8 @@ class ProductoModel extends Model
         $id = $stateparameters->insertId;
         $codigo_barras = $stateparameters->data['cod_barras'];
 
-        $query1 = $db->query("SELECT producto.cod_barras FROM producto WHERE cod_barras='$codigo_barras'");
+        $query1 = $db->query("SELECT producto.cod_barras FROM producto 
+        WHERE cod_barras='$codigo_barras'");
         $isCodBarra = $query1->getResultObject();
         if(empty($isCodBarra)){
             $isCodBarra='';
@@ -49,6 +58,8 @@ class ProductoModel extends Model
         $idProducto = $results5[0]->id_Producto + 1;
 
         $nombre = $stateparameters->data['nombre'];
+        // var_dump($nombre);
+        // var_dump($isCodBarra);die;
      
        
         $query5 = $db->query("INSERT INTO `producto`(`id_Producto`, `nombre`, `cod_barras`) VALUES ($idProducto,'$nombre','$isCodBarra')");
@@ -61,7 +72,9 @@ class ProductoModel extends Model
         if($precio==""){
             $precio=0;
         }
-        $query = $db->query("INSERT INTO `lista_de_precios`(`id`, `fechaDesde`, `fechaHasta`, `precio`,`id_Producto`) VALUES ($idListaPrecio,NOW(),NULL,$precio,$idProducto)");
+        $query = $db->query("INSERT INTO `lista_de_precios`(`id`, `fechaDesde`,
+         `fechaHasta`, `precio`,`id_Producto`) 
+         VALUES ($idListaPrecio,NOW(),NULL,$precio,$idProducto)");
         
         //crear lote
         $query3 = $db->query("SELECT MAX(id) AS id FROM lote");
@@ -75,7 +88,9 @@ class ProductoModel extends Model
       
         $cantidad = floatval($stateparameters->data['Cantidad']);
         // var_dump($cantidad);die;
-        $query4 = $db->query("INSERT INTO `lote`(`id`, `fechaCompra`, `fechaVencimiento`, `cantidad`, `id_Producto`) VALUES ($idLote,NOW(),'$fechaVe',$cantidad,$idProducto)");
+        $query4 = $db->query("INSERT INTO `lote`(`id`, `fechaCompra`, 
+        `fechaVencimiento`, `cantidad`, `id_Producto`) 
+        VALUES ($idLote,NOW(),'$fechaVe',$cantidad,$idProducto)");
        
 		return $idProducto;
         
@@ -102,17 +117,22 @@ class ProductoModel extends Model
         $precio = floatval($stateparameters->data['precio']);
 
         //update producto
-        $editProd = $db->query("UPDATE `producto` SET `nombre`=$nombre,`cod_barras`=$codBarra WHERE `id_Producto`=$idProd");
+        $editProd = $db->query("UPDATE `producto` SET `nombre`=$nombre,
+        `cod_barras`=$codBarra WHERE `id_Producto`=$idProd");
 
         //eliminar(soft) ultimo precio
-        $ultPrecio = $db->query("SELECT id FROM lista_de_precios WHERE id_Producto=$idProd AND fechaHasta IS NULL");
+        $ultPrecio = $db->query("SELECT id FROM lista_de_precios 
+        WHERE id_Producto=$idProd AND fechaHasta IS NULL");
         $ultPrecio = intval($ultPrecio->getResultObject()[0]->id);
-        $elimPrecio =  $db->query("UPDATE `lista_de_precios` SET `fechaHasta`= NOW() WHERE id=$ultPrecio");
+        $elimPrecio =  $db->query("UPDATE `lista_de_precios` 
+        SET `fechaHasta`= NOW() WHERE id=$ultPrecio");
         //crear nuevo precio
         $query2 = $db->query("SELECT MAX(id) AS id FROM lista_de_precios");
         $results2 = $query2->getResultObject();
         $idListaPrecio = intval($results2[0]->id + 1);
-        $nuevoPrecio = $db->query("INSERT INTO `lista_de_precios`(`id`, `fechaDesde`, `fechaHasta`, `precio`, `id_Producto`) VALUES ($idListaPrecio,NOW(),NULL,$precio,$idProd)");
+        $nuevoPrecio = $db->query("INSERT INTO `lista_de_precios`
+        (`id`, `fechaDesde`, `fechaHasta`, `precio`, `id_Producto`) 
+        VALUES ($idListaPrecio,NOW(),NULL,$precio,$idProd)");
         
         return;
     }
@@ -134,7 +154,8 @@ class ProductoModel extends Model
     {
         $db = \Config\Database::connect();
         $idProd = $row->id_Producto;
-        $precioActual = $db->query("SELECT precio FROM lista_de_precios WHERE id_Producto=$idProd AND fechaHasta IS NULL");
+        $precioActual = $db->query("SELECT precio FROM lista_de_precios 
+        WHERE id_Producto=$idProd AND fechaHasta IS NULL");
         try {
             $result = $precioActual->getResultObject()[0]->precio;
         } catch (\Throwable $th) {
@@ -147,7 +168,9 @@ class ProductoModel extends Model
     {
         $db = \Config\Database::connect();
         $idProd = $row->id_Producto;
-        $UltimaFechaCambPrecio= $db->query("SELECT fechaHasta FROM lista_de_precios WHERE id_Producto=$idProd AND fechaHasta IS NOT NULL ORDER BY fechaHasta desc");
+        $UltimaFechaCambPrecio= $db->query("SELECT fechaHasta 
+        FROM lista_de_precios WHERE id_Producto=$idProd 
+        AND fechaHasta IS NOT NULL ORDER BY fechaHasta desc");
         try {
             $result = $UltimaFechaCambPrecio->getResultObject()[0]->fechaHasta;
             //  var_dump($result);die;
@@ -163,9 +186,12 @@ class ProductoModel extends Model
         
         $db = \Config\Database::connect();
        
-        $query = $db->query("SELECT lista_de_precios.precio, producto.cod_barras FROM producto INNER JOIN lista_de_precios ON producto.id_Producto=lista_de_precios.id_Producto WHERE producto.nombre='$nombre' AND (lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW())");
+        $query = $db->query("SELECT lista_de_precios.precio, producto.cod_barras 
+        FROM producto INNER JOIN lista_de_precios 
+        ON producto.id_Producto=lista_de_precios.id_Producto 
+        WHERE producto.nombre='$nombre' AND (lista_de_precios.fechaHasta 
+        IS NULL OR lista_de_precios.fechaHasta>NOW())");
       
-        // $query1= $db->query("SELECT lista_de_precios.precio, producto.cod_barras FROM producto INNER JOIN lista_de_precios ON producto.id_Producto=lista_de_precios.id_Producto WHERE producto.nombre='$nombre' AND (lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW())");
        
         $result = $query->getResultObject()[0];
      
@@ -188,7 +214,8 @@ class ProductoModel extends Model
     public function buscarCodBarra($row){
         $db = \Config\Database::connect();
         $idProd = $row->id_Producto;
-        $query = $db->query("SELECT cod_barras FROM producto WHERE id_Producto='$idProd'");
+        $query = $db->query("SELECT cod_barras FROM producto 
+        WHERE id_Producto='$idProd'");
         $result = $query->getResultObject()[0]->cod_barras;
         
         return  $result;
