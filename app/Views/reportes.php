@@ -79,8 +79,11 @@ if (isset($data['output'])) {
     <canvas id="myChart3" width="400" height="400"></canvas>
 </div>
 </div>
-<div class="box effect1" style="position: relative; height:auto; width:100%">
+<div class="box effect1" style="position: relative; height:70vh; width:100%">
     <canvas id="myChart4" width="400" height="400"></canvas>
+</div>
+<div class="box effect1" style="position: relative; height:70vh; width:100%">
+    <canvas id="myChart5" width="400" height="400"></canvas>
 </div>
 
 
@@ -215,45 +218,87 @@ var myChart3 = new Chart(ctx3, {
 /* -------------------------------------------------------------------------- */
 /*                                 Line Chart                                 */
 /* -------------------------------------------------------------------------- */
+let ventasMensualesYDiarias = <?php echo json_encode($data["ventasMensualesYDiarias"]);?>;
+let labelsMeses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
+let labelMensualBruto = [0,0,0,0,0,0,0,0,0,0,0,0]
+let labelGananciasEstimadas = [0,0,0,0,0,0,0,0,0,0,0,0]
+ventasMensualesYDiarias[0].map(item=>{
+    labelMensualBruto[parseInt(item.Mes)-1]=(parseInt(item.Total))
+})
+labelMensualBruto.map((item,index)=>{
+    if(item!=0){
+        labelGananciasEstimadas[index] = item - (item / 1.3)
+    }
+})
+
+
 var ctx4 = document.getElementById('myChart4');
 var myChart4 = new Chart(ctx4, {
   type: 'line',
   data: {
-    labels: [1500,1600,1700,1750,1800,1850,1900,1950,1999,2050],
+    labels: labelsMeses,
     datasets: [{ 
-        data: [86,114,106,106,107,111,133,221,783,2478],
-        label: "Africa",
+        data: labelMensualBruto,
+        label: "Ventas Mensuales Bruto",
         borderColor: "#3e95cd",
         fill: false
       }, { 
-        data: [282,350,411,502,635,809,947,1402,3700,5267],
-        label: "Asia",
+        data: labelGananciasEstimadas,
+        label: "Ganancias Estimadas",
         borderColor: "#8e5ea2",
-        fill: false
-      }, { 
-        data: [168,170,178,190,203,276,408,547,675,734],
-        label: "Europe",
-        borderColor: "#3cba9f",
-        fill: false
-      }, { 
-        data: [40,20,10,16,24,38,74,167,508,784],
-        label: "Latin America",
-        borderColor: "#e8c3b9",
-        fill: false
-      }, { 
-        data: [6,3,2,2,7,26,82,172,312,433],
-        label: "North America",
-        borderColor: "#c45850",
         fill: false
       }
     ]
   },
   options: {
+    maintainAspectRatio: false,
     title: {
       display: true,
       text: 'World population per region (in millions)'
     }
   }
+});
+/* -------------------------------------------------------------------------- */
+/*                         LineChart Mes Actual Ventas                        */
+/* -------------------------------------------------------------------------- */
+let labelDiarioBruto = []
+let labelDaysActualMonth = []
+let mesActual = new Intl.DateTimeFormat('es-ES', { month: 'long'}).format(new Date());
+function daysInThisMonth() {
+  var now = new Date();
+  return new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+}
+let amountDaysCurrentMonth = daysInThisMonth()
+for (let index = 0; index < amountDaysCurrentMonth; index++) {
+    labelDiarioBruto.push(0);  
+}
+for (let index = 0; index < amountDaysCurrentMonth; index++) {
+    labelDaysActualMonth.push(index+1);  
+}
+ventasMensualesYDiarias[1].map(item=>{
+    labelDiarioBruto[parseInt(item.DayOfMonth)-1]=(parseInt(item.Total))
+})
+var ctx5 = document.getElementById('myChart5');
+var myChart5 = new Chart(ctx5, {
+    type: 'bar',
+    data: {
+        labels: labelDaysActualMonth,
+        datasets: [{
+            label: `Bruto Venta Diaria Mes ${mesActual}`,
+            data: labelDiarioBruto,
+            backgroundColor: 
+                'rgb(25, 117, 216)',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
 });
 </script>
     <?php

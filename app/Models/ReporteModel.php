@@ -83,45 +83,47 @@ class ReporteModel extends Model
 
         return $results;
     }
-    public function getVentaMensualYDiaria()
+    public function getVentaMensual()
     {
         /* -------------------------------------------------------------------------- */
         /*                     conexion a base de datos y consulta                    */
         /* -------------------------------------------------------------------------- */
+
         $principioMes = date('Y-m-01 00:00:00');
         $FinalMes = date('Y-m-t 23:59:59');
-        
-        $comienzoDia = date('Y-m-d 00:00:00');
-        $FinalDia = date('Y-m-d 23:59:59');
-        
         $db = \Config\Database::connect();
-        $query = $db->query("SELECT  
-        SUM(factura.total) AS ventaMensual
-        FROM
-            factura
-    
+        $queryVentasMensuales = $db->query("SELECT SUM(f.total) AS Total,
+		MONTH(f.date) AS Mes,
+       CASE WHEN MONTH(f.date) = 1 THEN 'enero'
+        WHEN MONTH(f.date) = 2 THEN 'febrero'
+        WHEN MONTH(f.date) = 3 THEN 'marzo'
+        WHEN MONTH(f.date) = 4 THEN 'abril'
+        WHEN MONTH(f.date) = 5 THEN 'mayo'
+        WHEN MONTH(f.date) = 6 THEN 'junio'
+        WHEN MONTH(f.date) = 7 THEN 'julio'
+        WHEN MONTH(f.date) = 8 THEN 'agosto'
+        WHEN MONTH(f.date) = 9 THEN 'septiembre'
+        WHEN MONTH(f.date) = 10 THEN 'octubre'
+        END AS MesNombre
+        FROM factura f
+        GROUP BY Mes");
+        $resultsMensual = $queryVentasMensuales->getResultObject();
+        // echo '<pre>';
+        // var_dump($resultsMensual);die;
+        $queryVentasDiarias = $db->query("SELECT SUM(f.total) AS Total,
+		DAY(f.date) AS DayOfMonth
+        FROM factura f
         WHERE
-            factura.date BETWEEN '$principioMes' AND  '$FinalMes'
-   
-        ");
-        $resultsMensual = $query->getResultObject()[0];
-        $queryVentaDiaria = $db->query("SELECT  
-        SUM(factura.total) AS ventaDiaria
-        FROM
-            factura
-    
-        WHERE
-            factura.date BETWEEN '$comienzoDia' AND  '$FinalDia'
-   
-        ");
-        $resultsDiario = $queryVentaDiaria->getResultObject()[0];
-        
+            f.date BETWEEN '$principioMes' AND  '$FinalMes'
+        GROUP BY DayOfMonth;");
+        $resultsDiarias = $queryVentasDiarias->getResultObject();
         $ventas = array();
-        array_push( $ventas,$resultsMensual,$resultsDiario);
+        array_push( $ventas,$resultsMensual,$resultsDiarias);
 
-        return json_encode($ventas);
+        return $ventas;
     }
 
  
 
 }
+

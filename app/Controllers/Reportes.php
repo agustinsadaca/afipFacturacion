@@ -17,11 +17,11 @@ class Reportes extends AdminLayout
         // $data['view'] = 'AdminLTE-3.1.0-rc/pages/charts/chartjs.html';
         $masVendidoMesActual = $this->getProductoMasVendidoMesActual();
         $masVendidoMesAnterior = $this->getProductoMasVendidoMensualAnterior();
-        $ventasMensualesYDiaria = $this->getVentaMensualYDiaria();
+        $ventasMensuales = $this->getVentaMensual();
         $data['view'] = 'reportes';
         $data['masVendidoMesActual'] = $masVendidoMesActual;
         $data['masVendidoMesAnterior'] = $masVendidoMesAnterior;
-        $data['ventasMensualesYDiaria'] = $ventasMensualesYDiaria;
+        $data['ventasMensualesYDiarias'] = $ventasMensuales;
         return $this->render($data);
 
     }
@@ -38,9 +38,9 @@ class Reportes extends AdminLayout
         // return json_encode($resultado);
         return $resultado;
     }
-    function getVentaMensualYDiaria(){
+    function getVentaMensual(){
         $reporte = new ReporteModel();
-        $resultado =  $reporte->getVentaMensualYDiaria();
+        $resultado =  $reporte->getVentaMensual();
         // return json_encode($resultado);
         return $resultado;
     }
