@@ -130,7 +130,7 @@ option[value="estado_factura"]{
 .statusFactura{
     pointer-events: none;
 }
-.erow > td{background-color:#e0e0e0 !important;overflow:auto!important;}
+.erow > td{background-color:#d1cfcf !important;overflow:hidden!important;}
 
 </style>
 
