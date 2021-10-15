@@ -93,7 +93,6 @@ class Productos extends AdminLayout
             return;
         });
         $crud->callbackColumn('Cantidad Total de Producto', function ($value, $row) {
-
             $producto = new ProductoModel();
             $resultado =  $producto->buscarCantTotalLotes($row);
 

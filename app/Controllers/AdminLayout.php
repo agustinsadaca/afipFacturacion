@@ -72,6 +72,12 @@ class AdminLayout extends BaseController {
 		{
 			$menuModel = new \App\Models\MenuModel();
 			$menues = $menuModel->parseMenues();
+		
+			if(session()->get('userID') == '3'){
+				unset($menues['Reportes']);
+				unset($menues['Facturación Afip']);
+			}
+	
 		}
 		
 		$menu = view('menu', $menues);

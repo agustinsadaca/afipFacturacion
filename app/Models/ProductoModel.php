@@ -48,21 +48,18 @@ class ProductoModel extends Model
         $query1 = $db->query("SELECT producto.cod_barras FROM producto 
         WHERE cod_barras='$codigo_barras'");
         $isCodBarra = $query1->getResultObject();
-        if(empty($isCodBarra)){
-            $isCodBarra='';
+        if(!empty($isCodBarra)){
+            $codigo_barras='';
         }
-       
+        
         //crear producto
         $query5 = $db->query("SELECT MAX(id_Producto) AS id_Producto FROM producto");
         $results5 = $query5->getResultObject();
         $idProducto = $results5[0]->id_Producto + 1;
 
         $nombre = $stateparameters->data['nombre'];
-        // var_dump($nombre);
-        // var_dump($isCodBarra);die;
      
-       
-        $query5 = $db->query("INSERT INTO `producto`(`id_Producto`, `nombre`, `cod_barras`) VALUES ($idProducto,'$nombre','$isCodBarra')");
+        $query5 = $db->query("INSERT INTO `producto`(`id_Producto`, `nombre`, `cod_barras`) VALUES ($idProducto,'$nombre','$codigo_barras')");
        
         // crear listaprecio
         $query2 = $db->query("SELECT MAX(id) AS id FROM lista_de_precios");
