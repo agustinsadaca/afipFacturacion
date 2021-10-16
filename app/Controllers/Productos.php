@@ -46,8 +46,7 @@ class Productos extends AdminLayout
         $crud->unsetColumns(['fechaCompra','fechaVencimiento']);
         $crud->requiredFields(['nombre','cod_barras','fechaVencimiento','Cantidad']);
         $crud->unsetEditFields(['id_Producto','nombre','cod_barras','precio']);
-        $crud->setRule('nombre','Nombre','is_unique[producto.nombre]');
-        $crud->setRule('cod_barras','Cod barras','is_unique[producto.cod_barras]');
+
         $crud->setRule('Cantidad','Cantidad','greater_than[-1]');
         $crud->setRule('precio','Precio','greater_than[0]'); 
 
@@ -57,6 +56,8 @@ class Productos extends AdminLayout
         $state = $crud->getState();
         if ($state == "add") 
         {
+            $crud->setRule('nombre','Nombre','is_unique[producto.nombre]');
+            $crud->setRule('cod_barras','Cod barras','is_unique[producto.cod_barras]');
             $crud->fieldType('id_Producto', 'hidden');
         };
         /* -------------------------------------------------------------------------- */
@@ -113,6 +114,14 @@ class Productos extends AdminLayout
 
             return "<p>".$resultado."</p>";
         });
+
+        $crud->callbackDelete(function ($stateParameters) {
+            $producto = new ProductoModel();
+            $resultado =  $producto->borrarProductoLoteYLP($stateParameters);
+
+            return $stateParameters;
+        });
+   
         
         $currentURL = current_url();
         $edit = strpos($currentURL,'edit');
@@ -122,7 +131,9 @@ class Productos extends AdminLayout
         }
 
           //SETS DATA TO VIEW
+        
         $data = array();
+
         $data['grocery'] = $crud;
         return $this->render($data);
 

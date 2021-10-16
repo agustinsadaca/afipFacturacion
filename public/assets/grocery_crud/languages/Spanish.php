@@ -45,6 +45,7 @@
 	$lang['alert_add_form']			= 'Los datos que intenta añadir no se han guardado.\\n¿Esta seguro que quiere volver a la lista?';
 	$lang['alert_edit_form']		= 'Los datos que intenta actualizar no se han guardado.\\n¿Esta seguro que quiere volver a la lista?';
 	$lang['alert_delete']			= '¿Esta seguro que quiere eliminar este registro?';
+	$lang['alert_delete_Productos']			= '¿Esta seguro que quiere eliminar este registro?\\nATENCION TAMBIEN SE ELIMINARAN LISTA DE PRECIOS Y LOTES RELACIONADOS AL PRODUCTO ';
 
 	$lang['insert_error']			= 'Ocurrio un error al añadir.';
 	$lang['update_error']			= 'Ocurrio un error al actualizar.';

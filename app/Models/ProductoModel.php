@@ -53,30 +53,23 @@ class ProductoModel extends Model
         }
         
         //crear producto
-        $query5 = $db->query("SELECT MAX(id_Producto) AS id_Producto FROM producto");
-        $results5 = $query5->getResultObject();
-        $idProducto = $results5[0]->id_Producto + 1;
-
+      
+        
         $nombre = $stateparameters->data['nombre'];
-     
-        $query5 = $db->query("INSERT INTO `producto`(`id_Producto`, `nombre`, `cod_barras`) VALUES ($idProducto,'$nombre','$codigo_barras')");
-       
+        
+        $query5 = $db->query("INSERT INTO `producto`( `nombre`, `cod_barras`) VALUES ('$nombre','$codigo_barras')");
+        $idProducto = $this->db->insertId();
         // crear listaprecio
-        $query2 = $db->query("SELECT MAX(id) AS id FROM lista_de_precios");
-        $results2 = $query2->getResultObject();
-        $idListaPrecio = intval($results2[0]->id + 1);
+        
         $precio = $stateparameters->data['precio'];
         if($precio==""){
             $precio=0;
         }
-        $query = $db->query("INSERT INTO `lista_de_precios`(`id`, `fechaDesde`,
+        $query = $db->query("INSERT INTO `lista_de_precios`( `fechaDesde`,
          `fechaHasta`, `precio`,`id_Producto`) 
-         VALUES ($idListaPrecio,NOW(),NULL,$precio,$idProducto)");
+         VALUES (NOW(),NULL,$precio,$idProducto)");
         
         //crear lote
-        $query3 = $db->query("SELECT MAX(id) AS id FROM lote");
-        $results3 = $query3->getResultObject();
-        $idLote = $results3[0]->id + 1;
      
         $fechaVencimiento = str_replace("/","-",$stateparameters->data['fechaVencimiento']);
         $fechaVenc = explode(" ",$fechaVencimiento);
@@ -85,9 +78,9 @@ class ProductoModel extends Model
       
         $cantidad = floatval($stateparameters->data['Cantidad']);
         // var_dump($cantidad);die;
-        $query4 = $db->query("INSERT INTO `lote`(`id`, `fechaCompra`, 
+        $query4 = $db->query("INSERT INTO `lote`( `fechaCompra`, 
         `fechaVencimiento`, `cantidad`, `id_Producto`) 
-        VALUES ($idLote,NOW(),'$fechaVe',$cantidad,$idProducto)");
+        VALUES (NOW(),'$fechaVe',$cantidad,$idProducto)");
        
 		return $idProducto;
         
@@ -216,6 +209,19 @@ class ProductoModel extends Model
         $result = $query->getResultObject()[0]->cod_barras;
         
         return  $result;
+    }
+    public function borrarProductoLoteYLP($row){
+        $db = \Config\Database::connect();
+        $idProducto = intval($row->primaryKeyValue);
+        //Borrar producto
+        $query = $db->query("DELETE FROM `producto` WHERE `id_Producto`= $idProducto");
+        try {
+            $queryLoteDelete = $db->query("DELETE FROM `lote` WHERE `id_Producto` = $idProducto");
+            $queryListaDePreciosDelete = $db->query("DELETE FROM `lista_de_precios` WHERE `id_Producto` = $idProducto");
+        } catch (\Throwable $th) {
+            return;
+        }
+        return;
     }
 
     

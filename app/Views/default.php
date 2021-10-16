@@ -19,6 +19,7 @@ endforeach;
 /*                                   Titulo                                   */
 /* -------------------------------------------------------------------------- */
 ?>
+
     <title>
         <?php 
             if(isset($data['title'])) 
@@ -33,8 +34,10 @@ endforeach;
 .errors_validation{
     color:red;
     padding: 50px 0 0 10px ;
-
-
+}
+.arrowBackProductos{
+    padding:10px auto;
+    width:40px;
 }
 </style>
 
@@ -43,6 +46,8 @@ endforeach;
 /*                                  Menu Bar                                  */
 /* -------------------------------------------------------------------------- */
 $menu; ?>
+
+
 
 <?php foreach($data['errors'] as $error) { 
 /* -------------------------------------------------------------------------- */
@@ -57,7 +62,19 @@ $menu; ?>
 	<div style='height: 30px;'></div>
     <div style="padding: 10px">
 
-        <?php
+<?php 
+/* -------------------------------------------------------------------------- */
+/*                                 Back button                                */
+/* -------------------------------------------------------------------------- */
+
+if(Strpos($_SERVER['REQUEST_URI'],'Lote/lotes') == true || Strpos($_SERVER['REQUEST_URI'],'ListaPrecios/listaPrecios') == true){
+?>
+<a  href="<?php echo base_url().'/Productos/listadoProductos'?>">
+<img class="arrowBackProductos" src="<?php echo (base_url().'/assets/uploads/files/iconmonstr-arrow-76.svg')?>" alt="backProductos">
+</a>
+<?php } ?>
+
+<?php
 /* -------------------------------------------------------------------------- */
 /*                          CRUD tabla de GroceryCrud                         */
 /* -------------------------------------------------------------------------- */

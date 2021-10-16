@@ -39,7 +39,15 @@
 	var paging_next 	= "<?php echo $this->l('list_paging_next'); ?>";
 	var paging_last 	= "<?php echo $this->l('list_paging_last'); ?>";
 
-	var message_alert_delete = "<?php echo $this->l('alert_delete'); ?>";
+	var message_alert_delete = "<?php
+	 if(Strpos($_SERVER['REQUEST_URI'],'Productos/listadoProductos')!=true){
+		 echo $this->l('alert_delete'); 
+		}else{
+			echo $this->l('alert_delete_Productos'); 
+
+		}
+	 
+	 ?>";
 
 	var default_per_page = <?php echo $default_per_page;?>;
 
