@@ -4,11 +4,16 @@ namespace App\Controllers;
 use App\Models\ProductoModel;
 use App\Libraries\GroceryCrud;
 use App\Models\FacturaModel;
+use GlobeAPI\Classes\Sammy\Sammy;
+
+
+
 
 
 class Productos extends AdminLayout
 {
-
+    public function __construct()
+    {}
     public function listadoProductos($errors=null)
     {
     
@@ -158,5 +163,42 @@ class Productos extends AdminLayout
         $producto = new ProductoModel();
         $resultado =  $producto->buscarPrecioXNomb($nomb);
         return json_encode($resultado);
+    }
+    public function importExcelProductos(){
+        
+        $data = array();
+        $data['view'] = 'importProductos.php';
+        return $this->render($data);
+    }
+    public function imortarDatosExcel(){
+        // require_once __DIR__.'\..\..\vendor\autoload.php'; // You have to require the library from your Composer vendor folder
+
+        if($this->request->getMethod()=='post'){
+			$ruta = 'uploads/';
+			if(!is_dir($ruta)){
+				mkdir($ruta,0755);
+			}
+			$file = $this->request->getFile('file_excel');
+            if (!$file->isValid()){
+				throw new RuntimeException($file->getErrorString().'('.$file->getError().')');
+			}
+			else{
+				$name_file = $file->getName();
+				$file->move($ruta);
+				if ($file->hasMoved())
+				{
+         
+                    require_once 'PhpSpreadsheet/src/PhpSpreadsheet/IOFactory.php';
+                    // PhpSpreadsheet\src\PhpSpreadsheet
+
+                    // ExcelFile($filename, $encoding);
+                    $data = new PhpSpreadsheet\PhpOffice\PhpSpreadsheet\IOFactory();
+
+               
+                    var_dump($var);die;
+
+                }
+            }
+        }
     }
 }

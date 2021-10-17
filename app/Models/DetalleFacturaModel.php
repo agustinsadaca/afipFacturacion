@@ -21,10 +21,6 @@ class DetalleFacturaModel extends Model
 
         $db = \Config\Database::connect();
 
-        $query3 = $db->query("SELECT MAX(id_detalle_factura) AS id_detalle FROM detalle_factura");
-        $results3 = $query3->getResultObject();
-        $idDetalleF = $results3[0]->id_detalle + 1;
-
         $results2 = intval($stateparameter->data['id_Producto']);
         $cantidad = $stateparameter->data['num'];
        
@@ -48,7 +44,7 @@ class DetalleFacturaModel extends Model
        //
         $subtotal =  $cantidad *  $precio;
 
-        $query5 = $db->query("INSERT INTO `detalle_factura`(`id_detalle_factura`, `id_Producto`, `cantidad`, `subtotal`,`id_factura`) VALUES ('$idDetalleF','$results2','$cantidad',' $subtotal', '$idFactura')"); 
+        $query5 = $db->query("INSERT INTO `detalle_factura`( `id_Producto`,`precio_unitario`,`cantidad`, `subtotal`,`id_factura`) VALUES ('$results2','$precio','$cantidad',' $subtotal', '$idFactura')"); 
         
         return TRUE;
     }
@@ -67,7 +63,7 @@ class DetalleFacturaModel extends Model
        $query2 = $db->query("SELECT lote.id,lote.fechaCompra, lote.fechaVencimiento, lote.cantidad FROM producto INNER JOIN lote ON producto.id_Producto=lote.id_Producto WHERE producto.id_Producto='$prodId' AND lote.cantidad!=0 order by lote.fechaVencimiento asc");
        try {
            $lote = intval($query2->getResultObject()[0]->id);
-           $cantidadLote = intval($query2->getResultObject()[0]->cantidad)-$cantidad;
+           $cantidadLote = intval($query2->getResultObject()[0]->cantidad)+$cantidad;
            $idLote = intval($query2->getResultObject()[0]->id);
            $fechaCompra = strval($query2->getResultObject()[0]->fechaCompra);
            $fechaVencimiento = strval($query2->getResultObject()[0]->fechaVencimiento);
@@ -125,16 +121,16 @@ class DetalleFacturaModel extends Model
     
             $cantidad = (float)$stateparameter->data['num'];
     
-            $query3 = $db->query("SELECT MAX(id_detalle_factura) AS id_detalle FROM detalle_factura");
-            $results3 = $query3->getResultObject();
-            $idDetalleF = $results3[0]->id_detalle + 1;
+            // $query3 = $db->query("SELECT MAX(id_detalle_factura) AS id_detalle FROM detalle_factura");
+            // $results3 = $query3->getResultObject();
+            // $idDetalleF = $results3[0]->id_detalle + 1;
     
             $query4 = $db->query("SELECT lista_de_precios.precio FROM producto INNER JOIN lista_de_precios ON producto.idListaPrecios=lista_de_precios.id WHERE (lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW()) AND producto.nombre='$nombProducto'");
             $precio = $query4->getResultObject()[0]->precio;
            
             $subtotal =  $cantidad *  $precio;
     
-            $query5 = $db->query("INSERT INTO `detalle_factura`(`id_detalle_factura`, `id_Producto`, `cantidad`, `subtotal`,`id_factura`) VALUES ('$idDetalleF','$results2','$cantidad',' $subtotal', '$idFactura')
+            $query5 = $db->query("INSERT INTO `detalle_factura`( `id_Producto`, `cantidad`, `subtotal`,`id_factura`) VALUES ('$results2','$cantidad',' $subtotal', '$idFactura')
             "); 
         // } catch (\Throwable $th) {
            
@@ -150,9 +146,9 @@ class DetalleFacturaModel extends Model
     public function agregarDetalleAutomatico($codBarra,$id)
     {
         $db = \Config\Database::connect();
-        $detalleId = $db->query("SELECT MAX(id_detalle_factura) AS id_detalle FROM detalle_factura");
-        $resultDetalleId = $detalleId->getResultObject();
-        $idDetalleF = $resultDetalleId[0]->id_detalle + 1;
+        // $detalleId = $db->query("SELECT MAX(id_detalle_factura) AS id_detalle FROM detalle_factura");
+        // $resultDetalleId = $detalleId->getResultObject();
+        // $idDetalleF = $resultDetalleId[0]->id_detalle + 1;
         
         $idProducto = $db->query("SELECT id_Producto FROM producto WHERE cod_barras='$codBarra'");
 
@@ -187,7 +183,7 @@ class DetalleFacturaModel extends Model
         $subtotal =  1 *  $precio;
         
 
-        $query5 = $db->query("INSERT INTO `detalle_factura`(`id_detalle_factura`, `id_Producto`, `precio_unitario`, `cantidad`, `subtotal`,`id_factura`) VALUES ('$idDetalleF','$resultsIdProducto',$precio,'1',' $subtotal', '$id')
+        $query5 = $db->query("INSERT INTO `detalle_factura`( `id_Producto`, `precio_unitario`, `cantidad`, `subtotal`,`id_factura`) VALUES ('$resultsIdProducto',$precio,'1',' $subtotal', '$id')
         "); 
         header('Location:'.base_url().'/PuntoVenta/carrito/'.$id);
         exit;

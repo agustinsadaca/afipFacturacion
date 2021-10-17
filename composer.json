@@ -7,7 +7,6 @@
 	"require": {
 		"php": "^7.3||^8.0",
 		"ext-curl": "*",
-		"ext-intl": "*",
 		"ext-json": "*",
 		"ext-mbstring": "*",
 		"kint-php/kint": "^3.3",
@@ -16,7 +15,7 @@
 		"mercadopago/dx-php": "2.2.1",
 		"vlucas/valitron": "^1.4",
 		"afipsdk/afip.php": "^0.7.0"
-	},
+			},
 	"require-dev": {
 		"codeigniter4/codeigniter4-standard": "^1.0",
 		"fakerphp/faker": "^1.9",
