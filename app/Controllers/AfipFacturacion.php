@@ -103,7 +103,12 @@ class AfipFacturacion extends AdminLayout
 
         
         $statusAfipServer = json_encode($this->getStatusServer());
-        $this->buscarFacturasAfipEnviar();
+        try {
+            $this->buscarFacturasAfipEnviar();
+
+        } catch (\Throwable $th) {
+
+        }
         
         $data = array();
         $data['serverStatus'] = $statusAfipServer;
@@ -241,8 +246,8 @@ class AfipFacturacion extends AdminLayout
         try {
             $afip = new Afip(array('CUIT' => 23213764519,'production'=>False));
             $res = $afip->ElectronicBilling->CreateNextVoucher($data);
-            // echo '<pre>'    ;
             // var_dump($res);die;
+            // echo '<pre>'    ;
           
             $last = $afip->ElectronicBilling->GetLastVoucher(1,1); //Devuelve el número del último comprobante creado para el punto de venta 1 y el tipo de comprobante 6 
             $voucher_info = $afip->ElectronicBilling->GetVoucherInfo($last,1,8); //Devuelve la información del comprobante 1 para el punto de venta 1 y el tipo de comprobante 6 (Factura B)
@@ -251,10 +256,10 @@ class AfipFacturacion extends AdminLayout
             $resultado =  $asignarCae->asignarCaeFacturaAfip($res,$factura);
            
         } catch (\Throwable $th) {
-            $asignarCae = new FacturaAfipModel();
-            $res ="";
             echo '<pre>'    ;
             var_dump($th);die;
+            $asignarCae = new FacturaAfipModel();
+            $res ="";
             $resultado =  $asignarCae->asignarCaeFacturaAfip($res,$factura);  
         }    
         }
