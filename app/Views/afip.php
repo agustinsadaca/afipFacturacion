@@ -247,11 +247,14 @@ $(function() {
     }
 
 if (<?php echo  $data['serverStatus']?>==true) {
-    $("#status").val("OK");
-    $("#status").addClass("exito");
+    // $("#status").val("OK");
+    // $("#status").addClass("exito"); borrar
+    $("#status").val("Error");
+    $("#status").addClass("fracaso");
 } else {
     $("#status").val("Error");
     $("#status").addClass("fracaso");
+   
 }
 document.getElementById("post_at").value = getSavedValue("post_at");    // set the value to this input
 document.getElementById("post_at_to_date").value = getSavedValue("post_at_to_date");   // set the value to this input

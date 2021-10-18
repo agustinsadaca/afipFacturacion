@@ -9,7 +9,7 @@ use App\Models\ClienteModel;
 
 class PuntoVenta extends AdminLayout
 {
-	public function venta()
+	public function venta($id=null)
 	{       
 		$crud = new GroceryCrud();
  
@@ -18,7 +18,7 @@ class PuntoVenta extends AdminLayout
         ];
 
         $columnas = [
-            'id','date','total','paga_con','vuelto','medio_pago','id_cliente','venta'
+            'id','date','total','paga_con','vuelto','id_cliente','venta'
         ];
     
         //// SETS GENERALES
@@ -36,6 +36,15 @@ class PuntoVenta extends AdminLayout
         $crud->setRelation('id_cliente', 'cliente', '{nombre} {apellido}');
         $crud->defaultOrdering('id', 'asc');
         $crud->unsetBackToDatagrid();
+
+        if($id != 'add' AND $id != 'edit' AND intval($id) != null){
+			$crud->where('id_cliente',$id);
+			// $crud->callbackAfterInsert(function ($stateParameters) use ($id)
+			// {
+			// $taskModel = new TaskModel();
+            // $taskModel =  $taskModel->setTask($stateParameters,$id);
+			
+        }
 
         if ($crud->getState() == 'add') 
         {
@@ -168,7 +177,7 @@ class PuntoVenta extends AdminLayout
     
         $crud->callbackAddField('cantidad', function ()
         {
-            return '<input type="number" value="1" name="num">';
+            return '<input type="number" value="1" name="num" min="1">';
         });
         
         $crud->callbackEditField('cantidad', function ($fieldValue, $primaryKeyValue ) 

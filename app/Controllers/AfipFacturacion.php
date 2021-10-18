@@ -256,8 +256,8 @@ class AfipFacturacion extends AdminLayout
             $resultado =  $asignarCae->asignarCaeFacturaAfip($res,$factura);
            
         } catch (\Throwable $th) {
-            echo '<pre>'    ;
-            var_dump($th);die;
+            // echo '<pre>'    ;
+            // var_dump($th);die;
             $asignarCae = new FacturaAfipModel();
             $res ="";
             $resultado =  $asignarCae->asignarCaeFacturaAfip($res,$factura);  

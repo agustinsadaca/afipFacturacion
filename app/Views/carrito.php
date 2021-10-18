@@ -58,26 +58,33 @@ table{
     width: 700px;
 }
 .compraDatos{
-    margin-left:30px;
+    margin-left:5px;
+    margin-top:30px;
+    
 }
 .finalizarComp{
-    margin-top:20px;
-    border-radius:2px;
+    margin-top:40px !important;
     box-shadow: none;
+    background-color: #1f7bde; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 5px;
 }
 .barcodes{
-    padding:25px 10px;
+    padding:25px 10px 5px;
 }
 
 
 </style>
 
 <?= $menu; ?>
-<?php foreach($data['errors'] as $error) { ?>
-        <div  class="errors_validation click">   
-            <?php echo $error;?>
-        </div>
-<?php } ?>
 
 	<div class="click" style='height: 10px;'></div>
     <div  style="padding: 10px">
@@ -124,7 +131,7 @@ if (isset($data['output'])) {
 
     <span>Vuelto : </span><input id="vuelto" type="text" readonly><br> -->
 
-    <p class="compraDatos"><input type="radio" name="pago" value="mercadopago">MercadoPago<input type="radio" name="pago" value="Contado">Contado </p>
+    <!-- <p class="compraDatos"><input type="radio" name="pago" value="mercadopago">MercadoPago<input type="radio" name="pago" value="Contado">Contado </p> -->
     
     <TABLE class="compraDatos">
         <tr>

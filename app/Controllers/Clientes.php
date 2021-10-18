@@ -39,8 +39,8 @@ class Clientes extends AdminLayout
        }
 
         $crud->setActionButton('Admin facturas Cliente', 'el el-user', function ($primaryKey) { 
-            return site_url('/ClienteFactura/ClienteFactura/' . $primaryKey); 
-        }, true);
+            return site_url('/PuntoVenta/venta/' . $primaryKey); 
+        }, false);
 
       
 

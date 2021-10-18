@@ -70,11 +70,11 @@ class Productos extends AdminLayout
         /* -------------------------------------------------------------------------- */
         $crud->setActionButton('Admin lotes de producto', 'el el-user', function ($primaryKey) { 
             return site_url('/Lote/lotes/' . $primaryKey); 
-        }, true);
+        }, false);
 
         $crud->setActionButton('Admin precios', 'el el-user', function ($primaryKey) { 
             return site_url('/ListaPrecios/listaPrecios/' . $primaryKey); 
-        }, true);
+        }, false);
 
         $crud->callbackAfterInsert(function ($stateParameters) use ($crud) {
            

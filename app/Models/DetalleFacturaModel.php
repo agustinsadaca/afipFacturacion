@@ -24,8 +24,9 @@ class DetalleFacturaModel extends Model
         $results2 = intval($stateparameter->data['id_Producto']);
         $cantidad = $stateparameter->data['num'];
        
-        $query1 = $db->query("SELECT lista_de_precios.precio FROM producto INNER JOIN lista_de_precios ON producto.id_Producto=lista_de_precios.id_Producto WHERE producto.id_Producto='$results2' AND (lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW())");
-        $precio = floatval($query1->getResultObject()[0]->precio);
+        // $query1 = $db->query("SELECT lista_de_precios.precio FROM producto INNER JOIN lista_de_precios ON producto.id_Producto=lista_de_precios.id_Producto WHERE producto.id_Producto='$results2' AND (lista_de_precios.fechaHasta IS NULL OR lista_de_precios.fechaHasta>NOW())");
+        // $precio = floatval($query1->getResultObject()[0]->precio);
+        $precio = floatval($stateparameter->data["precio_unitario"]);
 
        //descontar stock
        $query2 = $db->query("SELECT lote.id,lote.fechaCompra, lote.fechaVencimiento, lote.cantidad FROM producto INNER JOIN lote ON producto.id_Producto=lote.id_Producto WHERE producto.id_Producto='$results2' AND lote.cantidad!=0 order by lote.fechaVencimiento asc");
