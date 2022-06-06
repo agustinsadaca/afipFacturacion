@@ -54,18 +54,24 @@ class Productos extends AdminLayout
 
         $crud->setRule('Cantidad','Cantidad','greater_than[-1]');
         $crud->setRule('precio','Precio','greater_than[0]'); 
+        // $crud->unsetJquery();
 
         /* -------------------------------------------------------------------------- */
         /*                 Labels de la pantalla de alta de productos                 */
         /* -------------------------------------------------------------------------- */
-        $state = $crud->getState();
-        if ($state == "add") 
-        {
+        $currentURL = current_url();
+        $edit = strpos($currentURL,'edit');
+        $add = strpos($currentURL,'add');
+
+        // if($add!=false) {
             $crud->setRule('nombre','Nombre','is_unique[producto.nombre]');
             $crud->setRule('cod_barras','Cod barras','is_unique[producto.cod_barras]');
             $crud->fieldType('id_Producto', 'hidden');
-        };
-        /* -------------------------------------------------------------------------- */
+        // }
+        // echo '<pre>';
+        // var_dump($crud);
+    
+        // /* -------------------------------------------------------------------------- */
         /*                                  Acciones                                  */
         /* -------------------------------------------------------------------------- */
         $crud->setActionButton('Admin lotes de producto', 'el el-user', function ($primaryKey) { 
@@ -127,10 +133,8 @@ class Productos extends AdminLayout
             return $stateParameters;
         });
    
-        
-        $currentURL = current_url();
-        $edit = strpos($currentURL,'edit');
-        $add = strpos($currentURL,'add');
+     
+       
         if($add !== false || $edit !== false ){
             $data['errors'] = $errors;
         }

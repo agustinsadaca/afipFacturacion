@@ -105,4 +105,5 @@
 .card{
   box-shadow: 0 0 10px rgb(0 0 0 / 13%), 0 1px 3px rgb(0 0 0 / 20%) !important;
 }
+.errors_validation{color:red}
 </style>
